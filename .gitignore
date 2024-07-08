@@ -39,3 +39,6 @@ next-env.d.ts
 /.vscode/
 # vim files
 *.sw?
+
+# .idea
+.idea/
