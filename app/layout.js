@@ -14,8 +14,10 @@ export default function RootLayout({ children }) {
     return (
         <html lang="en">
             <body className={inter.className}>
-                <Nav />
-                <AntdRegistry>{children}</AntdRegistry>
+                <AntdRegistry>
+                    <Nav />
+                    {children}
+                </AntdRegistry>
             </body>
         </html>
     );
