@@ -17,7 +17,7 @@ export default function LoginTest() {
 
     return <div>
         <p>{Object.keys(user || {}).join('\n')}</p>
-        <p>Name: {user?.name}</p>
+        <p>Name: {user?.info.name}</p>
         <p>Email: {user?.email}</p>
         <button onClick={() => {
             setModal(true);
