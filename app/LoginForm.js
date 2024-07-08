@@ -5,13 +5,14 @@ import { createUser, login } from "@/lib/firebase";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useLayoutEffect, useState } from "react";
 
-export const LoginForm = ({ register = false, onClose = null, open = false }) => {
+export const LoginForm = ({ onClose = null, open = false }) => {
     const [messageApi, contextHolder] = message.useMessage();
-    const [_register, setRegister] = useState(register);
+    const [register, setRegister] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const closeModal = () => {
         setIsModalOpen(false);
+        setRegister(false);
         if (onClose) {
             onClose();
         }
@@ -21,7 +22,7 @@ export const LoginForm = ({ register = false, onClose = null, open = false }) =>
         messageApi.open({
             type: "error",
             content: message,
-        }).then(r => {
+        }).then(() => {
         });
     };
 
@@ -29,17 +30,17 @@ export const LoginForm = ({ register = false, onClose = null, open = false }) =>
         messageApi.open({
             type: "success",
             content: message,
-        }).then(r => {
+        }).then(() => {
         });
     };
 
     const onFinish = (values) => {
-        if (_register) {
+        if (register) {
             createUser(values.email, values.password, {
                 displayName: values.name,
                 phoneNumber: values.phone || "",
                 gender: values.gender || "",
-                birthday: values.birthday || ""
+                birthday: values.birthday?.toString() || ""
             }).then(result => {
                 if (result.status === "success") {
                     success("Register successful");
@@ -76,9 +77,9 @@ export const LoginForm = ({ register = false, onClose = null, open = false }) =>
     return (
         <>
             {contextHolder}
-            <Modal title={_register ? "Register" : "Login"} open={isModalOpen} onOk={closeModal} onCancel={closeModal} footer={null} destroyOnClose>
+            <Modal title={register ? "Register" : "Login"} open={isModalOpen} onOk={closeModal} onCancel={closeModal} footer={null} destroyOnClose>
                 <div className="p-2 bg-white m-auto top-0 left-0 rounded-lg">
-                    {!_register ?
+                    {!register ?
                         <Form
                             name="normal_login"
                             className="login-form"
@@ -172,6 +173,7 @@ export const LoginForm = ({ register = false, onClose = null, open = false }) =>
                             <Form.Item
                                 name="phone"
                                 label="Phone Number"
+                                rules={[{ pattern: /^\s*(?:\+?(\d{1,3}))?[-. (]*(\d{3})[-. )]*(\d{3})[-. ]*(\d{4})(?: *x(\d+))?\s*$/, message: "Invalid number!" }]}
                             >
                                 <Input style={{ width: "100%" }}/>
                             </Form.Item>

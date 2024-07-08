@@ -16,7 +16,8 @@ export default function LoginTest() {
     }, []);
 
     return <div>
-        <p>User: {user?.displayName}</p>
+        <p>{Object.keys(user || {}).join('\n')}</p>
+        <p>Name: {user?.name}</p>
         <p>Email: {user?.email}</p>
         <button onClick={() => {
             setModal(true);
@@ -26,8 +27,6 @@ export default function LoginTest() {
                 setUser(null);
             });
         }}>Logout</button>
-        {modal && <LoginForm onClose={() => {
-            setModal(false);
-        }}></LoginForm>}
+        <LoginForm open={modal} onClose={() => {setModal(false);}}></LoginForm>
     </div>;
 }
