@@ -14,7 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blue } from "@ant-design/colors";
 import { useLayoutEffect, useState } from "react";
-import { getUser } from "@/lib/firebase";
+import { getUser, logout } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
 import { Image } from "antd";
 
@@ -80,26 +80,30 @@ const Nav = () => {
         <nav>
             <div></div>
             <div className="flex flex-row justify-between items-center h-14 bg-[#29292c]">
-                {loginForm ? <LoginForm /> : null}
+                <LoginForm open={loginForm} onClose={() => setLoginForm(false)} />
                 <div className="mx-3 my-5">
                     <Button
                         className="!border-none !text-white !bg-transparent hover:!text-blue-500"
                         icon={<UserOutlined style={{ fontSize: "20px" }} />}
                         onClick={() => {
-                            loginForm
-                                ? setLoginForm(!loginForm)
-                                : setOpen(!open);
+                            if (user) setOpen(true);
+                            else setLoginForm(!loginForm);
                         }}
                     >
                         {user ? user : "Tài khoản"}
                     </Button>
                     <Popover
-                        content={<Menu mode="inline" items={menu} />}
+                        content={<Menu mode="inline" items={menu} onClick={(item) => {
+                            if(item.key === "3") {
+                                logout().then(() => setOpen(false));
+                            }
+                        }} />}
                         // title="Title"
                         trigger="click"
                         open={open}
                         placement="bottomLeft"
                         onOpenChange={handleOpenChange}
+                        defaultSelectedKeys={[]}
                         className="absolute left-0 top-12"
                     />
                 </div>
@@ -130,11 +134,11 @@ const Nav = () => {
                         color="white"
                         overlayInnerStyle={{ color: "black" }}
                     >
-                        <Button className="!border-none !bg-transparent ">
+                        <Button className="!border-none !bg-transparent !text-white group">
                             <Badge
                                 size="small"
                                 count={5}
-                                className="!text-white hover:!text-blue-500"
+                                className="!text-white group-hover:!text-blue-500"
                             >
                                 <ShoppingCartOutlined
                                     style={{ fontSize: "25px" }}
@@ -148,11 +152,11 @@ const Nav = () => {
                         color="white"
                         overlayInnerStyle={{ color: "black" }}
                     >
-                        <Button className="!border-none !bg-transparent ">
+                        <Button className="!border-none !bg-transparent group">
                             <Badge
                                 size="small"
                                 count={2}
-                                className="!text-white hover:!text-blue-500"
+                                className="!text-white group-hover:!text-blue-500"
                             >
                                 <BellOutlined style={{ fontSize: "25px" }} />
                             </Badge>

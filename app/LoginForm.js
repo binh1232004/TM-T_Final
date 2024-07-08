@@ -5,7 +5,7 @@ import { createUser, login } from "@/lib/firebase";
 import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import { useLayoutEffect, useState } from "react";
 
-export const LoginForm = ({ register = false, onClose = null }) => {
+export const LoginForm = ({ register = false, onClose = null, open = false }) => {
     const [messageApi, contextHolder] = message.useMessage();
     const [_register, setRegister] = useState(register);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -69,10 +69,14 @@ export const LoginForm = ({ register = false, onClose = null }) => {
         setIsModalOpen(true);
     }, []);
 
+    useLayoutEffect(() => {
+        setIsModalOpen(open);
+    }, [open]);
+
     return (
         <>
             {contextHolder}
-            <Modal title={_register ? "Register" : "Login"} open={isModalOpen} onOk={closeModal} onCancel={closeModal} footer={null}>
+            <Modal title={_register ? "Register" : "Login"} open={isModalOpen} onOk={closeModal} onCancel={closeModal} footer={null} destroyOnClose>
                 <div className="p-2 bg-white m-auto top-0 left-0 rounded-lg">
                     {!_register ?
                         <Form
