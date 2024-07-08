@@ -4,53 +4,114 @@ import {
     HomeOutlined,
     ShoppingCartOutlined,
     UserOutlined,
+    PoweroffOutlined,
+    SettingOutlined,
+    BellOutlined,
+    CreditCardOutlined,
 } from "@ant-design/icons";
-import { Button, Input } from "antd";
+import { Button, Input, Popover, Menu, Badge, Tooltip } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blue } from "@ant-design/colors";
+import { useLayoutEffect, useState } from "react";
+import { getUser } from "@/lib/firebase";
+import { LoginForm } from "@/app/LoginForm";
+import { Image } from "antd";
 
 const list = [
     {
         name: (
             <span>
-                <HomeOutlined /> Trang chủ
+                <HomeOutlined /> Home
             </span>
         ),
         path: "/",
     },
     {
-        name: "Áo",
-        path: "/shirt",
+        name: "Shirts",
+        path: "/shirts",
     },
     {
-        name: "Quần",
+        name: "Pants",
         path: "/pants",
+    },
+    {
+        name: "Accessories",
+        path: "/accessories",
+    },
+];
+
+const menu = [
+    {
+        key: "1",
+        icon: <SettingOutlined />,
+        label: "Manage account",
+    },
+    {
+        key: "2",
+        icon: <CreditCardOutlined />,
+        label: "Oders",
+    },
+    {
+        key: "3",
+        icon: <PoweroffOutlined />,
+        label: "Sign out",
     },
 ];
 
 const Nav = () => {
     const { Search } = Input;
     const pathName = usePathname();
+    const [user, setUser] = useState(null);
+    const [loginForm, setLoginForm] = useState(false);
+    const [open, setOpen] = useState(false);
+    const handleOpenChange = (newOpen) => {
+        setOpen(newOpen);
+    };
+
+    useLayoutEffect(() => {
+        getUser((u) => {
+            setUser(u?.email);
+        });
+    }, []);
+
     // const onSearch = (value, _e, info) => console.log(info?.source, value);
     return (
-        <nav className="flex flex-row justify-between items-center h-14 bg-[#29292c]">
-            <div className="mx-3 my-5">
-                <Button
-                    className="!border-none !text-white !bg-transparent hover:!text-blue-500"
-                    icon={<UserOutlined style={{ fontSize: "20px" }} />}
-                >
-                    Tài khoản
-                </Button>
-            </div>
-            <div className="h-full w-full flex gap-8 justify-center items-center">
-                {list.map((item, index) => {
-                    return (
-                        <ul>
-                            <li className="w-fit mx-10 text-white hover:text-blue-500 flex justify-center items-center">
+        <nav>
+            <div></div>
+            <div className="flex flex-row justify-between items-center h-14 bg-[#29292c]">
+                {loginForm ? <LoginForm /> : null}
+                <div className="mx-3 my-5">
+                    <Button
+                        className="!border-none !text-white !bg-transparent hover:!text-blue-500"
+                        icon={<UserOutlined style={{ fontSize: "20px" }} />}
+                        onClick={() => {
+                            loginForm
+                                ? setLoginForm(!loginForm)
+                                : setOpen(!open);
+                        }}
+                    >
+                        {user ? user : "Tài khoản"}
+                    </Button>
+                    <Popover
+                        content={<Menu mode="inline" items={menu} />}
+                        // title="Title"
+                        trigger="click"
+                        open={open}
+                        placement="bottomLeft"
+                        onOpenChange={handleOpenChange}
+                        className="absolute left-0 top-12"
+                    />
+                </div>
+                <div className="h-full w-full flex gap-8 justify-evenly items-center">
+                    {list.map((item, index) => {
+                        return (
+                            <div
+                                className="w-fit text-white hover:text-blue-500 flex justify-center items-center"
+                                key={index}
+                            >
                                 <Link
                                     href={item.path}
-                                    key={index}
                                     className={`${
                                         item.path === pathName &&
                                         "border-b-2 border-white hover:border-blue-500"
@@ -58,20 +119,50 @@ const Nav = () => {
                                 >
                                     {item.name}
                                 </Link>
-                            </li>
-                        </ul>
-                    );
-                })}
+                            </div>
+                        );
+                    })}
+                </div>
+                <div className="flex justify-center items-center mx-3 my-5">
+                    <Tooltip
+                        placement="bottom"
+                        title="Cart"
+                        color="white"
+                        overlayInnerStyle={{ color: "black" }}
+                    >
+                        <Button className="!border-none !bg-transparent ">
+                            <Badge
+                                size="small"
+                                count={5}
+                                className="!text-white hover:!text-blue-500"
+                            >
+                                <ShoppingCartOutlined
+                                    style={{ fontSize: "25px" }}
+                                />
+                            </Badge>
+                        </Button>
+                    </Tooltip>
+                    <Tooltip
+                        placement="bottom"
+                        title="Notification"
+                        color="white"
+                        overlayInnerStyle={{ color: "black" }}
+                    >
+                        <Button className="!border-none !bg-transparent ">
+                            <Badge
+                                size="small"
+                                count={2}
+                                className="!text-white hover:!text-blue-500"
+                            >
+                                <BellOutlined style={{ fontSize: "25px" }} />
+                            </Badge>
+                        </Button>
+                    </Tooltip>
+                </div>
             </div>
-            <div className="flex justify-center items-center">
-                <Button className="!border-none !text-white !bg-transparent hover:!text-blue-500">
-                    Giỏ hàng
-                    <ShoppingCartOutlined style={{ fontSize: "20px" }} />
-                </Button>
-            </div>
-            <div className="mx-3 my-5 flex gap-8">
+            <div className="mx-3 my-5 flex gap-8 absolute right-0">
                 <Search
-                    placeholder="Tìm kiếm"
+                    placeholder="Search"
                     // onSearch={onSearch}
                     enterButton
                     className="!w-[200px]"
