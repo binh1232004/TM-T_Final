@@ -20,24 +20,38 @@ import { Image } from "antd";
 
 const list = [
     {
-        name: (
-            <span>
-                <HomeOutlined /> Home
-            </span>
+        key: "1",
+        label: (
+            <Link href="/">
+                <span>
+                    <HomeOutlined /> Home
+                </span>
+            </Link>
         ),
-        path: "/",
     },
     {
-        name: "Shirts",
-        path: "/shirts",
+        key: "2",
+        label: (
+            <Link href="/shirts">
+                <span>Shirts</span>
+            </Link>
+        ),
     },
     {
-        name: "Pants",
-        path: "/pants",
+        key: "3",
+        label: (
+            <Link href="/pants">
+                <span>Pants</span>
+            </Link>
+        ),
     },
     {
-        name: "Accessories",
-        path: "/accessories",
+        key: "4",
+        label: (
+            <Link href="/accessories">
+                <span>Accessories</span>
+            </Link>
+        ),
     },
 ];
 
@@ -45,17 +59,29 @@ const menu = [
     {
         key: "1",
         icon: <SettingOutlined />,
-        label: "Manage account",
+        label: (
+            <Link href="">
+                <span>Manage account</span>
+            </Link>
+        ),
     },
     {
         key: "2",
         icon: <CreditCardOutlined />,
-        label: "Oders",
+        label: (
+            <Link href="">
+                <span>Oders</span>
+            </Link>
+        ),
     },
     {
         key: "3",
         icon: <PoweroffOutlined />,
-        label: "Sign out",
+        label: (
+            <Link href="">
+                <span>Sign out</span>
+            </Link>
+        ),
     },
 ];
 
@@ -73,8 +99,11 @@ const Nav = () => {
     return (
         <nav>
             <div className="flex flex-row justify-between items-center h-14">
-                <LoginForm open={loginForm} onClose={() => setLoginForm(false)} />
-                <div className="mx-3 my-5">
+                <LoginForm
+                    open={loginForm}
+                    onClose={() => setLoginForm(false)}
+                />
+                <div className="">
                     <Button
                         className="!border-none !text-white !bg-transparent hover:!text-blue-500"
                         icon={<UserOutlined style={{ fontSize: "20px" }} />}
@@ -83,42 +112,46 @@ const Nav = () => {
                             else setLoginForm(!loginForm);
                         }}
                     >
-                        {user !== undefined ? user?.email || "Tài khoản": <Spin size="small" />}
+                        {user !== undefined ? (
+                            user?.email || "Tài khoản"
+                        ) : (
+                            <Spin size="small" />
+                        )}
                     </Button>
                     <Popover
-                        content={<Menu mode="inline" items={menu} onClick={(item) => {
-                            if(item.key === "3") {
-                                logout().then(() => setOpen(false));
-                            }
-                        }} />}
+                        content={
+                            <Menu
+                                mode="inline"
+                                items={menu}
+                                onClick={(item) => {
+                                    if (item.key === "3") {
+                                        logout().then(() => setOpen(false));
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }}
+                                selectedKeys={[]}
+                            />
+                        }
                         // title="Title"
                         trigger="click"
                         open={open}
                         placement="bottomLeft"
                         onOpenChange={handleOpenChange}
                         defaultSelectedKeys={[]}
-                        className="absolute left-0 top-12"
+                        className="absolute left-10 top-12"
                     />
                 </div>
-                <div className="h-full w-full flex gap-8 justify-evenly items-center">
-                    {list.map((item, index) => {
-                        return (
-                            <div
-                                className="w-fit [&_*]:!text-white [&_*]:hover:!text-blue-500 flex justify-center items-center"
-                                key={index}
-                            >
-                                <Link
-                                    href={item.path}
-                                    className={`${
-                                        item.path === pathName &&
-                                        "border-b-2 border-white hover:border-blue-500"
-                                    } capitalize font-medium transition-all`}
-                                >
-                                    {item.name}
-                                </Link>
-                            </div>
-                        );
-                    })}
+                <div className="h-full w-full !flex gap-8 !justify-center !items-center">
+                    <Menu
+                        theme="dark"
+                        mode="horizontal"
+                        items={list}
+                        style={{
+                            display: "flex",
+                            justifyContent: "center",
+                        }}
+                    />
                 </div>
                 <div className="flex justify-center items-center mx-3 my-5">
                     <Tooltip
@@ -156,14 +189,6 @@ const Nav = () => {
                         </Button>
                     </Tooltip>
                 </div>
-            </div>
-            <div className="mx-3 my-5 flex gap-8 absolute right-0">
-                <Search
-                    placeholder="Search"
-                    // onSearch={onSearch}
-                    enterButton
-                    className="!w-[200px]"
-                />
             </div>
         </nav>
     );
