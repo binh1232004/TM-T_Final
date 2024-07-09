@@ -82,6 +82,7 @@ export const LoginForm = ({ onClose = null, open = false }) => {
                     {!register ?
                         <Form
                             name="normal_login"
+                            labelCol={{ span: 5 }}
                             className="login-form"
                             onFinish={onFinish}
                             onFinishFailed={onFinishFailed}
@@ -118,6 +119,7 @@ export const LoginForm = ({ onClose = null, open = false }) => {
                         </Form>
                         : <Form
                             name="register"
+                            labelCol={{ span: 7 }}
                             onFinish={onFinish}
                             onFinishFailed={onFinishFailed}
                             scrollToFirstError
