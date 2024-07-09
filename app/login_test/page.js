@@ -3,27 +3,24 @@
 // Note: This is a test page for the login feature
 
 import { LoginForm } from "@/app/LoginForm";
-import { getCatalogs, getProduct, getProducts, getUser, logout, searchProducts } from "@/lib/firebase";
+import { logout, useUser } from "@/lib/firebase";
 import { useEffect, useState } from "react";
+import { getCatalogs, getProduct, getProducts, searchProducts } from "@/lib/firebase_server";
 
 export default function LoginTest() {
-    const [user, setUser] = useState(null);
+    const user = useUser();
     const [modal, setModal] = useState(false);
     const [catalogs, setCatalogs] = useState(null);
     const [products, setProducts] = useState(null);
 
     useEffect(() => {
-        getUser((user) => {
-            setUser(user);
-            console.log("getUser", user);
-        });
         getCatalogs().then((data) => {
             setCatalogs(data);
         });
         getProducts("1", 10).then((data) => {
             setProducts(data);
-            getProduct("1", Object.keys(data)[0]).then((data) => {
-                console.log("getProduct", data);
+            getProduct(Object.keys(data)[0], "1").then((data) => {
+                console.log("getProduct2", data);
             });
             searchProducts("1", -1).then((data) => {
                 console.log("searchProducts", data);
@@ -32,7 +29,11 @@ export default function LoginTest() {
         });
     }, []);
 
-    return <div>
+    useEffect(() => {
+        console.log("user", user);
+    }, [user]);
+
+    return (user !== undefined) && <div>
         <p>{Object.keys(user || {}).join(' ')}</p>
         <p>Name: {user?.displayName}</p>
         <p>Email: {user?.email}</p>
@@ -42,9 +43,7 @@ export default function LoginTest() {
             setModal(true);
         }}>Click</button>
         <button onClick={() => {
-            logout().then(() => {
-                setUser(null);
-            });
+            logout().then(() => {});
         }}>Logout</button>
         <LoginForm open={modal} onClose={() => {setModal(false);}}></LoginForm>
     </div>;

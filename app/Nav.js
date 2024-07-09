@@ -14,7 +14,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blue } from "@ant-design/colors";
 import { useLayoutEffect, useState } from "react";
-import { getUser, logout } from "@/lib/firebase";
+import { getUser, logout, useUser } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
 import { Image } from "antd";
 
@@ -62,18 +62,12 @@ const menu = [
 const Nav = () => {
     const { Search } = Input;
     const pathName = usePathname();
-    const [user, setUser] = useState(null);
+    const user = useUser(null);
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
     const handleOpenChange = (newOpen) => {
         setOpen(newOpen);
     };
-
-    useLayoutEffect(() => {
-        getUser((u) => {
-            setUser(u?.email);
-        });
-    }, []);
 
     // const onSearch = (value, _e, info) => console.log(info?.source, value);
     return (
@@ -90,7 +84,7 @@ const Nav = () => {
                             else setLoginForm(!loginForm);
                         }}
                     >
-                        {user ? user : "Tài khoản"}
+                        {user !== undefined ? user?.email || "Tài khoản": null}
                     </Button>
                     <Popover
                         content={<Menu mode="inline" items={menu} onClick={(item) => {
