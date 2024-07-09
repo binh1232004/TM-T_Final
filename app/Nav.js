@@ -113,7 +113,7 @@ const Nav = () => {
                         }}
                     >
                         {user !== undefined ? (
-                            user?.email || "Tài khoản"
+                            user?.email || "Sign in"
                         ) : (
                             <Spin size="small" />
                         )}
