@@ -9,12 +9,12 @@ import {
     BellOutlined,
     CreditCardOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Popover, Menu, Badge, Tooltip } from "antd";
+import { Button, Input, Popover, Menu, Badge, Tooltip, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blue } from "@ant-design/colors";
 import { useLayoutEffect, useState } from "react";
-import { getUser, logout, useUser } from "@/lib/firebase";
+import { logout, useUser } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
 import { Image } from "antd";
 
@@ -72,8 +72,7 @@ const Nav = () => {
     // const onSearch = (value, _e, info) => console.log(info?.source, value);
     return (
         <nav>
-            <div></div>
-            <div className="flex flex-row justify-between items-center h-14 bg-[#29292c]">
+            <div className="flex flex-row justify-between items-center h-14">
                 <LoginForm open={loginForm} onClose={() => setLoginForm(false)} />
                 <div className="mx-3 my-5">
                     <Button
@@ -84,7 +83,7 @@ const Nav = () => {
                             else setLoginForm(!loginForm);
                         }}
                     >
-                        {user !== undefined ? user?.email || "Tài khoản": null}
+                        {user !== undefined ? user?.email || "Tài khoản": <Spin size="small" />}
                     </Button>
                     <Popover
                         content={<Menu mode="inline" items={menu} onClick={(item) => {
@@ -105,7 +104,7 @@ const Nav = () => {
                     {list.map((item, index) => {
                         return (
                             <div
-                                className="w-fit text-white hover:text-blue-500 flex justify-center items-center"
+                                className="w-fit [&_*]:!text-white [&_*]:hover:!text-blue-500 flex justify-center items-center"
                                 key={index}
                             >
                                 <Link

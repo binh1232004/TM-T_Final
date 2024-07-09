@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
-import Nav from "./Nav";
+import MainLayout from "@/app/MainLayout";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -13,10 +13,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-            <body className={inter.className}>
+            <body className={`${inter.className}`}>
                 <AntdRegistry>
-                    <Nav />
-                    {children}
+                    <MainLayout>
+                        {children}
+                    </MainLayout>
                 </AntdRegistry>
             </body>
         </html>
