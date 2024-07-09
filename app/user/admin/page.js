@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@/lib/firebase";
+import { updateProduct, useUser } from "@/lib/firebase";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { Button, Layout, List, Menu, Modal, Spin } from "antd";
 import { useRouter } from "next/navigation";
@@ -20,6 +20,7 @@ export default function AdminPage() {
     const [currentProductCatalog, setCurrentProductCatalog] = useState();
     const [productModal, setProductModal] = useState(false);
     const [currentProduct, setCurrentProduct] = useState({});
+    const [reload, setReload] = useState(false);
 
     const items = [
         {
@@ -61,12 +62,12 @@ export default function AdminPage() {
         if (currentProductCatalog) {
             getProducts(currentProductCatalog, -1).then((data) => {
                 setProducts(data);
-                console.log("getProducts", currentProductCatalog, data);
             });
         }
-    }, [currentProductCatalog]);
+        console.log("Get products", currentProductCatalog);
+    }, [currentProductCatalog, reload]);
 
-    const confirmDelete = () => {
+    const confirmDelete = (product) => {
         confirm({
             title: "Do you want to delete this items?",
             icon: <ExclamationCircleFilled/>,
@@ -74,9 +75,10 @@ export default function AdminPage() {
             okType: "danger",
             maskClosable: true,
             onOk() {
-                return new Promise((resolve, reject) => {
-                    setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
-                }).catch(() => console.log("Oops errors!"));
+                return updateProduct(currentProductCatalog, {}, product.id).then(() => {
+                    console.log("Product deleted");
+                    setReload(!reload);
+                });
             },
             onCancel() {
             },
@@ -97,7 +99,7 @@ export default function AdminPage() {
     };
 
     const onDelete = (product) => {
-        confirmDelete();
+        confirmDelete(product);
     };
 
     const onAdd = () => {
@@ -107,7 +109,7 @@ export default function AdminPage() {
 
     if (user) {
         return <div className="py-12 px-20">
-            <ProductForm product={currentProduct} open={productModal}
+            <ProductForm product={currentProduct} open={productModal} onComplete={() => setReload(!reload)}
                          onClose={() => setProductModal(false)}></ProductForm>
             <Layout className="overflow-hidden">
                 <h1 className="w-full text-center text-2xl font-bold my-2">Admin console</h1>
@@ -121,17 +123,14 @@ export default function AdminPage() {
                     />
                     <div className="m-3 w-full">
                         {currentAction === "products" && <div>
-                            <Menu onClick={onClick2} selectedKeys={[currentProductCatalog]} mode="horizontal"
-                                  items={catalogs}/>
+                            <div className="flex flex-row justify-between px-2">
+                                <Menu onClick={onClick2} selectedKeys={[currentProductCatalog]} mode="horizontal"
+                                      items={catalogs} className="w-full"/>
+                                <Button className="my-auto" type="primary" onClick={onAdd}><PlusCircleOutlined/>Add product</Button>
+                            </div>
                             <List
                                 size="small"
                                 bordered
-                                footer={
-                                    <div>
-                                        <Button type="primary" size="small"
-                                                onClick={onAdd}><PlusCircleOutlined/>Add</Button>
-                                    </div>
-                                }
                                 dataSource={Object.keys(products).map((key) => products[key])}
                                 pagination={{ position: "bottom", align: "center" }}
                                 renderItem={(item) => {

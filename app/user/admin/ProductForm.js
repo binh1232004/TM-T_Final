@@ -1,11 +1,15 @@
-import { Button, Form, Input, InputNumber, List, Modal, Upload } from "antd";
+import { Button, Form, Input, InputNumber, message, Modal, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
 import { numberWithSeps, parseNumberWithSeps } from "@/lib/utils";
 import { UploadOutlined } from "@ant-design/icons";
+import { updateProduct } from "@/lib/firebase";
+import { getCatalogs } from "@/lib/firebase_server";
 
-export default function ProductForm({ product, open = false, onClose = null }) {
+export default function ProductForm({ product, open = false, onClose = null, onComplete = null }) {
+    const [messageApi, contextHolder] = message.useMessage();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
+    const [catalog, setCatalog] = useState();
 
     const closeModal = () => {
         setIsModalOpen(false);
@@ -19,7 +23,7 @@ export default function ProductForm({ product, open = false, onClose = null }) {
     };
 
     const normFile = (e) => {
-        console.log('Upload event:', e);
+        console.log("Upload event:", e);
         if (Array.isArray(e)) {
             return e;
         }
@@ -28,6 +32,8 @@ export default function ProductForm({ product, open = false, onClose = null }) {
 
     const onFinish = (values) => {
         const result = {
+            id: product?.id,
+            catalog: product?.catalog || values.catalog,
             name: values.name,
             price: values.price,
             description: values.description,
@@ -37,12 +43,47 @@ export default function ProductForm({ product, open = false, onClose = null }) {
                 l: values.l,
                 xl: values.xl
             },
-            images: values.images.map((image) => image?.url)
+            images: values.images.map((image) => image?.url || image.originFileObj)
         };
+        closeModal();
 
-        console.log(result);
+        const destroy = loading("Saving...");
+        updateProduct(result.catalog, result, product?.id).then(() => {
+            destroy();
+            success("Product saved");
+            if (onComplete) {
+                onComplete(result);
+            }
+        }).catch((e) => {
+            destroy();
+            error("Save product failed " + e.message);
+        });
+    };
 
-        // TODO: save product
+    const error = (message) => {
+        messageApi.open({
+            type: "error",
+            content: message,
+        }).then(() => {
+        });
+    };
+
+    const success = (message) => {
+        messageApi.open({
+            type: "success",
+            content: message,
+        }).then(() => {
+        });
+    };
+
+    const loading = (message) => {
+        messageApi.open({
+            type: "loading",
+            content: message,
+            duration: 0
+        }).then(() => {
+        });
+        return messageApi.destroy;
     };
 
     useEffect(() => {
@@ -50,24 +91,37 @@ export default function ProductForm({ product, open = false, onClose = null }) {
     }, [open]);
 
     useEffect(() => {
-        product?.name && form.setFieldValue("name", product.name);
-        product?.price && form.setFieldValue("price", product.price);
-        product?.description && form.setFieldValue("description", product.description);
-        product?.variants && form.setFieldsValue({ s: product.variants.s, m: product.variants.m, l: product.variants.l, xl: product.variants.xl });
-        product?.images && form.setFieldValue("images", product.images.map((image, index) => {
-            return {
-                uid: index,
-                name: image,
-                status: "done",
-                url: image
-            };
-        }));
-    }, [product]);
+        if (isModalOpen) {
+            product?.name && form.setFieldValue("name", product.name);
+            product?.price && form.setFieldValue("price", product.price);
+            product?.description && form.setFieldValue("description", product.description);
+            product?.variants && form.setFieldsValue({
+                s: product.variants.s,
+                m: product.variants.m,
+                l: product.variants.l,
+                xl: product.variants.xl
+            });
+            product?.images && form.setFieldValue("images", product.images.map((image, index) => {
+                return {
+                    uid: index,
+                    name: image,
+                    status: "done",
+                    url: image
+                };
+            }));
+            getCatalogs().then((data) => {
+                setCatalog(Object.keys(data).map((key) => {
+                    return <Select.Option key={key} value={key}>{data[key].name}</Select.Option>;
+                }));
+            });
+        }
+    }, [product, isModalOpen]);
 
     return (
         <Modal title={Object.keys(product).length ? "Edit" : "Add new product"} open={isModalOpen} onOk={closeModal}
                onCancel={closeModal} footer={null} destroyOnClose style={{ top: 20 }}
                forceRender afterClose={clearForm}>
+            {contextHolder}
             <Form
                 form={form}
                 layout="horizontal"
@@ -88,6 +142,16 @@ export default function ProductForm({ product, open = false, onClose = null }) {
                 >
                     <Input/>
                 </Form.Item>
+                {!Object.keys(product).length ?
+                    <Form.Item
+                        name="catalog"
+                        label="Catalog"
+                        rules={[{ required: true, message: "Please select catalog!" }]}
+                    >
+                        <Select placeholder="Select product catalog">
+                            {catalog}
+                        </Select>
+                    </Form.Item> : null}
                 <Form.Item
                     name="price"
                     label="Price"
@@ -167,11 +231,11 @@ export default function ProductForm({ product, open = false, onClose = null }) {
                     <Upload listType="picture" beforeUpload={file => {
                         const validType = file.type === "image/jpeg" || file.type === "image/png";
                         if (!validType) {
-                            alert("You can only upload JPG/PNG file!");
+                            error("You can only upload JPG/PNG file!");
                         }
                         return validType || Upload.LIST_IGNORE;
                     }}>
-                        <Button icon={<UploadOutlined />}>Upload</Button>
+                        <Button icon={<UploadOutlined/>}>Upload</Button>
                     </Upload>
                 </Form.Item>
 
