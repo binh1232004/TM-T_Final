@@ -15,22 +15,22 @@ const items = [
     {
         label: "User info",
         key: "info",
-        icon: <Link href="/user/info"><IdcardOutlined/></Link>,
+        icon: <Link href={"/user/info"}><IdcardOutlined/></Link>,
     },
     {
         label: "Cart",
         key: "cart",
-        icon: <Link href="/user/cart"><ShoppingCartOutlined/></Link>,
+        icon: <Link href={"/user/cart"}><ShoppingCartOutlined/></Link>,
     },
     {
         label: "Orders",
         key: "orders",
-        icon: <Link href="/user/orders"><ContainerOutlined/></Link>,
+        icon: <Link href={"/user/orders"}><ContainerOutlined/></Link>,
     },
     {
         label: "Privacy",
         key: "privacy",
-        icon: <Link href="/user/privacy"><SafetyOutlined/></Link>,
+        icon: <Link href={"/user/privacy"}><SafetyOutlined/></Link>,
     },
 ];
 
