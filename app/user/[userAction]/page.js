@@ -1,35 +1,36 @@
 "use client";
 
 import { Layout, Menu, Spin } from "antd";
-import ProductList from "@/app/user/admin/ProductList";
-import UserList from "@/app/user/admin/UserList";
 import { useUser } from "@/lib/firebase";
 import { ContainerOutlined, IdcardOutlined, SafetyOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Privacy from "@/app/user/[userAction]/Privacy";
 import Link from "next/link";
+import UserInfo from "@/app/user/[userAction]/UserInfo";
+import Cart from "@/app/user/[userAction]/Cart";
+import Orders from "@/app/user/[userAction]/Orders";
 
 const items = [
     {
         label: "User info",
         key: "info",
-        icon: <Link href="/user/info"><IdcardOutlined/></Link>,
+        icon: <Link href={"/user/info"}><IdcardOutlined/></Link>,
     },
     {
         label: "Cart",
         key: "cart",
-        icon: <Link href="/user/cart"><ShoppingCartOutlined/></Link>,
+        icon: <Link href={"/user/cart"}><ShoppingCartOutlined/></Link>,
     },
     {
         label: "Orders",
         key: "orders",
-        icon: <Link href="/user/orders"><ContainerOutlined/></Link>,
+        icon: <Link href={"/user/orders"}><ContainerOutlined/></Link>,
     },
     {
         label: "Privacy",
         key: "privacy",
-        icon: <Link href="/user/privacy"><SafetyOutlined/></Link>,
+        icon: <Link href={"/user/privacy"}><SafetyOutlined/></Link>,
     },
 ];
 
@@ -39,10 +40,6 @@ export default function UserPage() {
     const pathName = usePathname();
     const [currentAction, setCurrentAction] = useState("info");
     const [display, setDisplay] = useState(false);
-
-    const onClick = ({ key }) => {
-        // setCurrentAction(key);
-    };
 
     useEffect(() => {
         if (user !== undefined) {
@@ -56,7 +53,11 @@ export default function UserPage() {
     }, [user, router]);
 
     useEffect(() => {
-        setCurrentAction(pathName.split("/")[2] || "info");
+        if (items.map((item) => item.key).includes(pathName.split("/")[2])) {
+            setCurrentAction(pathName.split("/")[2]);
+        } else {
+            router.push("/user");
+        }
     }, [pathName]);
 
 
@@ -66,15 +67,17 @@ export default function UserPage() {
                 <h1 className="w-full text-center text-2xl font-bold my-2">User console</h1>
                 <div className="flex flex-row bg-white p-3 rounded-lg">
                     <Menu
-                        onClick={onClick}
+                        onClick={() => {
+                        }}
                         selectedKeys={[currentAction]}
                         mode="vertical"
                         items={items}
                         className="!bg-transparent max-w-[200px] min-w-[160px]"
                     />
                     <div className="m-3 w-full">
-                        {currentAction === "1" && <ProductList></ProductList>}
-                        {currentAction === "2" && <UserList></UserList>}
+                        {currentAction === "info" && <UserInfo></UserInfo>}
+                        {currentAction === "cart" && <Cart></Cart>}
+                        {currentAction === "orders" && <Orders></Orders>}
                         {currentAction === "privacy" && <Privacy></Privacy>}
                     </div>
                 </div>
