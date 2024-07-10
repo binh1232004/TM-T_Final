@@ -20,11 +20,8 @@ export default function Privacy() {
             <Tooltip title={user?.deleted ? "This account has been marked for deletion" : ""}>
                 <Button type="primary" danger disabled={user?.deleted} onClick={() => {
                     deleteUser().then((result) => {
-                        if (result.status === "success") {
-                            success("Deletion request sent");
-                        } else {
-                            error(result.message);
-                        }
+                        if (result.status === "success") success("Deletion request sent");
+                        else error(result.message);
                     });
                 }}>Request deletion</Button>
             </Tooltip>

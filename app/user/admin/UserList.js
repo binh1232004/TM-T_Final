@@ -3,12 +3,13 @@
 import { useEffect, useState } from "react";
 import { deleteUser, getUsers } from "@/lib/firebase";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { List, Modal, Spin } from "antd";
+import { List, Modal, Spin, Typography } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
 import { useMessage } from "@/lib/utils";
 
 const { confirm } = Modal;
+const { Title } = Typography;
 
 export default function UserList() {
     const { error, contextHolder } = useMessage();
@@ -56,6 +57,7 @@ export default function UserList() {
     return <div>
         <Spin spinning={loading} size="large">
             {contextHolder}
+            <Title level={3}>Edit users</Title>
             <UserForm user={currentUser} open={userModal} onClose={() => setUserModal(false)}
                       onComplete={() => setReload(!reload)}></UserForm>
             <List

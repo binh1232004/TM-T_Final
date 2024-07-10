@@ -13,9 +13,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
 
     const closeModal = () => {
         setIsModalOpen(false);
-        if (onClose) {
-            onClose();
-        }
+        onClose?.();
     };
 
     const clearForm = () => {
@@ -51,12 +49,11 @@ export default function ProductForm({ product, open = false, onClose = null, onC
         updateProduct(result.catalog, result, product?.id).then(() => {
             destroy();
             success("Product saved");
-            if (onComplete) {
-                onComplete(result);
-            }
         }).catch((e) => {
             destroy();
             error("Save product failed " + e.message);
+        }).finally(() => {
+            onComplete?.();
         });
     };
 
@@ -214,7 +211,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                 </Form.Item>
 
                 <Form.Item>
-                    <div className="flex flex-row gap-2">
+                    <div className="flex flex-row gap-2 w-full justify-end">
                         <Button type="default" onClick={closeModal}>
                             Cancel
                         </Button>

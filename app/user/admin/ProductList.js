@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, List, Menu, Modal, Spin } from "antd";
+import { Button, List, Menu, Modal, Spin, Typography } from "antd";
 import { ExclamationCircleFilled, PlusCircleOutlined, ProductOutlined } from "@ant-design/icons";
 import ProductListItem from "@/app/user/admin/ProductListItem";
 import { useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import ProductForm from "@/app/user/admin/ProductForm";
 import { updateProduct } from "@/lib/firebase";
 
 const { confirm } = Modal;
+const { Title } = Typography;
 
 export default function ProductList() {
     const [products, setProducts] = useState([]);
@@ -76,6 +77,7 @@ export default function ProductList() {
     return (
         <div>
             <Spin size="large" spinning={loading}>
+                <Title level={3}>Edit products</Title>
                 <ProductForm product={currentProduct} open={productModal} onComplete={() => setReload(!reload)}
                              onClose={() => setProductModal(false)}></ProductForm>
                 <div className="flex flex-row justify-between px-2">

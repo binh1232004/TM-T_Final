@@ -1,14 +1,15 @@
 "use client";
 
 import { Layout, Menu, Spin } from "antd";
-import ProductList from "@/app/user/admin/ProductList";
-import UserList from "@/app/user/admin/UserList";
 import { useUser } from "@/lib/firebase";
 import { ContainerOutlined, IdcardOutlined, SafetyOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Privacy from "@/app/user/[userAction]/Privacy";
 import Link from "next/link";
+import UserInfo from "@/app/user/[userAction]/UserInfo";
+import Cart from "@/app/user/[userAction]/Cart";
+import Orders from "@/app/user/[userAction]/Orders";
 
 const items = [
     {
@@ -40,10 +41,6 @@ export default function UserPage() {
     const [currentAction, setCurrentAction] = useState("info");
     const [display, setDisplay] = useState(false);
 
-    const onClick = ({ key }) => {
-        // setCurrentAction(key);
-    };
-
     useEffect(() => {
         if (user !== undefined) {
             if (user === null) {
@@ -56,7 +53,11 @@ export default function UserPage() {
     }, [user, router]);
 
     useEffect(() => {
-        setCurrentAction(pathName.split("/")[2] || "info");
+        if (items.map((item) => item.key).includes(pathName.split("/")[2])) {
+            setCurrentAction(pathName.split("/")[2]);
+        } else {
+            router.push("/user");
+        }
     }, [pathName]);
 
 
@@ -73,8 +74,9 @@ export default function UserPage() {
                         className="!bg-transparent max-w-[200px] min-w-[160px]"
                     />
                     <div className="m-3 w-full">
-                        {currentAction === "1" && <ProductList></ProductList>}
-                        {currentAction === "2" && <UserList></UserList>}
+                        {currentAction === "info" && <UserInfo></UserInfo>}
+                        {currentAction === "cart" && <Cart></Cart>}
+                        {currentAction === "orders" && <Orders></Orders>}
                         {currentAction === "privacy" && <Privacy></Privacy>}
                     </div>
                 </div>
