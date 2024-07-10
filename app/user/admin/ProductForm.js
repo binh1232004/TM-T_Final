@@ -9,7 +9,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
     const [messageApi, contextHolder] = message.useMessage();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
-    const [catalog, setCatalog] = useState();
+    const [catalog, setCatalog] = useState([]);
 
     const closeModal = () => {
         setIsModalOpen(false);

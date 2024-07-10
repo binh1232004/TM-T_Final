@@ -1,11 +1,12 @@
 "use client";
 
-import { getUsers, useUser } from "@/lib/firebase";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useUser } from "@/lib/firebase";
+import { useLayoutEffect, useState } from "react";
 import { Layout, Menu, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import { ProductOutlined, UserOutlined } from "@ant-design/icons";
 import ProductList from "@/app/user/admin/ProductList";
+import UserList from "@/app/user/admin/UserList";
 
 export default function AdminPage() {
     const user = useUser();
@@ -33,16 +34,6 @@ export default function AdminPage() {
         }
     }, [user, router]);
 
-    useEffect(() => {
-        if (currentAction === "products") {
-
-        } else if (currentAction === "users") {
-            getUsers().then((data) => {
-                console.log(data);
-            });
-        }
-    }, [currentAction]);
-
     const onClick = ({ key }) => {
         setCurrentAction(key);
     };
@@ -61,9 +52,7 @@ export default function AdminPage() {
                     />
                     <div className="m-3 w-full">
                         {currentAction === "products" && <ProductList></ProductList>}
-                        {currentAction === "users" && <div>
-                            Users
-                        </div>}
+                        {currentAction === "users" && <UserList></UserList>}
                     </div>
                 </div>
             </Layout>

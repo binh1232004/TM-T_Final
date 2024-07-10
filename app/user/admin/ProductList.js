@@ -57,12 +57,11 @@ export default function ProductList() {
         confirm({
             title: "Do you want to delete this items?",
             icon: <ExclamationCircleFilled/>,
-            content: "When clicked the OK button, this dialog will be closed after 1 second",
+            content: "This action cannot be undone",
             okType: "danger",
             maskClosable: true,
             onOk() {
                 return updateProduct(currentProductCatalog, {}, product.id).then(() => {
-                    console.log("Product deleted");
                     setReload(!reload);
                 });
             },
@@ -78,7 +77,7 @@ export default function ProductList() {
             <div className="flex flex-row justify-between px-2">
                 <Menu onClick={onClick} selectedKeys={[currentProductCatalog]} mode="horizontal"
                       items={catalogs} className="w-full"/>
-                <Button className="my-auto" type="primary" onClick={onAdd}><PlusCircleOutlined/>Add product</Button>
+                {catalogs.length ? <Button className="my-auto" type="primary" onClick={onAdd}><PlusCircleOutlined/>Add product</Button> : null}
             </div>
             <List
                 size="small"
