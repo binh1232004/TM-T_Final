@@ -31,9 +31,9 @@ export default function UserForm({ user, open = false, onClose = null, onComplet
         };
 
         const destroy = loading("Saving...");
+        closeModal();
         updateUserInfo(user.uid, result).then(() => {
             updateUserAdmin(user.uid, values.admin).then(() => {
-                closeModal();
                 destroy();
                 success("User info saved");
                 if (onComplete) {

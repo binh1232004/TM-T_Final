@@ -45,9 +45,9 @@ export default function ProductForm({ product, open = false, onClose = null, onC
             },
             images: values.images.map((image) => image?.url || image.originFileObj)
         };
-        closeModal();
 
         const destroy = loading("Saving...");
+        closeModal();
         updateProduct(result.catalog, result, product?.id).then(() => {
             destroy();
             success("Product saved");

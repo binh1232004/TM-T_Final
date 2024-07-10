@@ -6,10 +6,12 @@ import { ExclamationCircleFilled } from "@ant-design/icons";
 import { List, Modal, Spin } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
+import { useMessage } from "@/lib/utils";
 
 const { confirm } = Modal;
 
 export default function UserList() {
+    const { error, contextHolder } = useMessage();
     const [users, setUsers] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [reload, setReload] = useState(false);
@@ -21,6 +23,8 @@ export default function UserList() {
             if (data.status === "success") {
                 setUsers(data.data);
                 setLoading(false);
+            } else {
+                error(data.message);
             }
         });
     }, [reload]);
@@ -51,6 +55,7 @@ export default function UserList() {
 
     return <div>
         <Spin spinning={loading} size="large">
+            {contextHolder}
             <UserForm user={currentUser} open={userModal} onClose={() => setUserModal(false)}
                       onComplete={() => setReload(!reload)}></UserForm>
             <List

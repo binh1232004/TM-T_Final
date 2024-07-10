@@ -12,6 +12,7 @@ export default function AdminPage() {
     const user = useUser();
     const router = useRouter();
     const [currentAction, setCurrentAction] = useState("products");
+    const [display, setDisplay] = useState(false);
 
     const items = [
         {
@@ -30,6 +31,8 @@ export default function AdminPage() {
         if (user !== undefined) {
             if (!user?.admin) {
                 router.push("/");
+            } else {
+                setDisplay(true);
             }
         }
     }, [user, router]);
@@ -38,7 +41,7 @@ export default function AdminPage() {
         setCurrentAction(key);
     };
 
-    if (user) {
+    if (user && display) {
         return <div className="py-12 px-20">
             <Layout className="overflow-hidden">
                 <h1 className="w-full text-center text-2xl font-bold my-2">Admin console</h1>
