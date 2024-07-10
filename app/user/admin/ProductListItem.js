@@ -17,7 +17,7 @@ export default function ProductListItem({ product, onEdit = null, onDelete = nul
                 <Tag className="flex flex-col !h-fit !w-fit !my-auto !p-0" bordered={false}>
                     <div className="flex flex-row border-gray-200 gap-0">
                         {["s", "m", "l", "xl"].map((i) => {
-                            return <Tag key={i} className="!h-full !w-full" bordered={false} color={product.variants[i] === 0 ? "red" : "default"}
+                            return <Tag key={i} className="!h-full !w-full !m-0" bordered={false} color={product.variants[i] === 0 ? "red" : "default"}
                             >{i.toUpperCase()}: {product.variants[i]}</Tag>;
                         })}
                     </div>

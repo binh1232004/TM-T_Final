@@ -174,7 +174,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                     name="stock"
                     label="Stock"
                 >
-                    <div className="grid grid-cols-2 w-fit">
+                    <div className="grid grid-cols-2 w-fit h-fit">
                         <Form.Item
                             name="s"
                             label=""
@@ -182,7 +182,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                                 { required: true, message: "Please input stock!" },
                                 { type: "number", min: 0, message: "Stock must be at least 0!" }
                             ]}
-                            style={{ display: "inline-block", width: "6.5rem" }}
+                            style={{ display: "inline-block", width: "6.5rem", height: "fit-content", marginBottom: "0" }}
                         >
                             <InputNumber addonBefore="S" min={0} max={9999}/>
                         </Form.Item>
@@ -193,7 +193,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                                 { required: true, message: "Please input stock!" },
                                 { type: "number", min: 0, message: "Stock must be at least 0!" }
                             ]}
-                            style={{ display: "inline-block", width: "6.5rem" }}
+                            style={{ display: "inline-block", width: "6.5rem", height: "fit-content", marginBottom: "0" }}
                         >
                             <InputNumber addonBefore="M" min={0} max={9999}/>
                         </Form.Item>
@@ -204,7 +204,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                                 { required: true, message: "Please input stock!" },
                                 { type: "number", min: 0, message: "Stock must be at least 0!" }
                             ]}
-                            style={{ display: "inline-block", width: "6.5rem" }}
+                            style={{ display: "inline-block", width: "6.5rem", height: "fit-content", marginBottom: "0" }}
                         >
                             <InputNumber addonBefore="L" min={0} max={9999}/>
                         </Form.Item>
@@ -215,7 +215,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                                 { required: true, message: "Please input stock!" },
                                 { type: "number", min: 0, message: "Stock must be at least 0!" }
                             ]}
-                            style={{ display: "inline-block", width: "6.5rem" }}
+                            style={{ display: "inline-block", width: "6.5rem", height: "fit-content", marginBottom: "0" }}
                         >
                             <InputNumber addonBefore={"XL"} min={0} max={9999}/>
                         </Form.Item>
