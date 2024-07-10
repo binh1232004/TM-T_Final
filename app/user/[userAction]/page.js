@@ -67,7 +67,8 @@ export default function UserPage() {
                 <h1 className="w-full text-center text-2xl font-bold my-2">User console</h1>
                 <div className="flex flex-row bg-white p-3 rounded-lg">
                     <Menu
-                        onClick={onClick}
+                        onClick={() => {
+                        }}
                         selectedKeys={[currentAction]}
                         mode="vertical"
                         items={items}
