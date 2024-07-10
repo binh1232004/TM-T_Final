@@ -48,7 +48,7 @@ export default function Home() {
                         </p>
                         <div className="mt-10 sm:mt-[300px]">
                             <Link
-                                href="/pants"
+                                href="/shirts"
                                 className="h-auto max-w-full inline-block"
                             >
                                 <div className="flex items-center justify-center h-full">
@@ -70,7 +70,7 @@ export default function Home() {
                     <div className="basis-1/2">
                         <div className="mt-10 sm:mt-[220px]">
                             <Link
-                                href="/shirts"
+                                href="/accessories"
                                 className="h-auto max-w-full inline-block"
                             >
                                 <div className="flex items-center justify-center h-full">
@@ -90,7 +90,7 @@ export default function Home() {
                         </div>
                         <div className="mt-10 sm:mt-40">
                             <Link
-                                href="/accessories"
+                                href="/pants"
                                 className="h-auto max-w-full inline-block"
                             >
                                 <div className="flex items-center justify-center h-full">
