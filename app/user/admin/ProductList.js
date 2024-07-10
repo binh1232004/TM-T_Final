@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, List, Menu, Modal } from "antd";
+import { Button, List, Menu, Modal, Spin } from "antd";
 import { ExclamationCircleFilled, PlusCircleOutlined, ProductOutlined } from "@ant-design/icons";
 import ProductListItem from "@/app/user/admin/ProductListItem";
 import { useEffect, useState } from "react";
@@ -17,6 +17,7 @@ export default function ProductList() {
     const [productModal, setProductModal] = useState(false);
     const [currentProduct, setCurrentProduct] = useState({});
     const [reload, setReload] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getCatalogs().then((data) => {
@@ -33,8 +34,10 @@ export default function ProductList() {
 
     useEffect(() => {
         if (!currentProductCatalog) return;
+        setLoading(true);
         getProducts(currentProductCatalog, -1).then((data) => {
             setProducts(data);
+            setLoading(false);
         });
     }, [currentProductCatalog, reload]);
 
@@ -72,23 +75,26 @@ export default function ProductList() {
 
     return (
         <div>
-            <ProductForm product={currentProduct} open={productModal} onComplete={() => setReload(!reload)}
-                         onClose={() => setProductModal(false)}></ProductForm>
-            <div className="flex flex-row justify-between px-2">
-                <Menu onClick={onClick} selectedKeys={[currentProductCatalog]} mode="horizontal"
-                      items={catalogs} className="w-full"/>
-                {catalogs.length ? <Button className="my-auto" type="primary" onClick={onAdd}><PlusCircleOutlined/>Add product</Button> : null}
-            </div>
-            <List
-                size="small"
-                bordered
-                dataSource={Object.keys(products).map((key) => products[key])}
-                pagination={{ position: "bottom", align: "center" }}
-                renderItem={(item) => {
-                    return <ProductListItem product={item} onEdit={onEdit}
-                                            onDelete={onDelete}></ProductListItem>;
-                }}
-            />
+            <Spin size="large" spinning={loading}>
+                <ProductForm product={currentProduct} open={productModal} onComplete={() => setReload(!reload)}
+                             onClose={() => setProductModal(false)}></ProductForm>
+                <div className="flex flex-row justify-between px-2">
+                    <Menu onClick={onClick} selectedKeys={[currentProductCatalog]} mode="horizontal"
+                          items={catalogs} className="w-full"/>
+                    {catalogs.length ? <Button className="my-auto" type="primary" onClick={onAdd}><PlusCircleOutlined/>Add
+                        product</Button> : null}
+                </div>
+                <List
+                    size="small"
+                    bordered
+                    dataSource={Object.keys(products).map((key) => products[key])}
+                    pagination={{ position: "bottom", align: "center" }}
+                    renderItem={(item) => {
+                        return <ProductListItem product={item} onEdit={onEdit}
+                                                onDelete={onDelete}></ProductListItem>;
+                    }}
+                />
+            </Spin>
         </div>
     );
 }

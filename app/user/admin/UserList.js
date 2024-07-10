@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { deleteUser, getUsers } from "@/lib/firebase";
 import { ExclamationCircleFilled } from "@ant-design/icons";
-import { List, Modal } from "antd";
+import { List, Modal, Spin } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
 
@@ -14,10 +14,14 @@ export default function UserList() {
     const [currentUser, setCurrentUser] = useState({});
     const [reload, setReload] = useState(false);
     const [userModal, setUserModal] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         getUsers().then((data) => {
-            if (data.status === "success") setUsers(data.data);
+            if (data.status === "success") {
+                setUsers(data.data);
+                setLoading(false);
+            }
         });
     }, [reload]);
 
@@ -46,17 +50,20 @@ export default function UserList() {
     };
 
     return <div>
-        <UserForm user={currentUser} open={userModal} onClose={() => setUserModal(false)} onComplete={() => setReload(!reload)}></UserForm>
-        <List
-            size="small"
-            bordered
-            dataSource={Object.keys(users).map((key) => {
-                return {uid: key, ...users[key]}
-            })}
-            pagination={{ position: "bottom", align: "center" }}
-            renderItem={(item) => {
-                return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}></UserListItem>;
-            }}
-        />
+        <Spin spinning={loading} size="large">
+            <UserForm user={currentUser} open={userModal} onClose={() => setUserModal(false)}
+                      onComplete={() => setReload(!reload)}></UserForm>
+            <List
+                size="small"
+                bordered
+                dataSource={Object.keys(users).map((key) => {
+                    return { uid: key, ...users[key] };
+                })}
+                pagination={{ position: "bottom", align: "center" }}
+                renderItem={(item) => {
+                    return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}></UserListItem>;
+                }}
+            />
+        </Spin>
     </div>;
 }
