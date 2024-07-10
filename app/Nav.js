@@ -7,16 +7,25 @@ import {
     PoweroffOutlined,
     SettingOutlined,
     BellOutlined,
-    CreditCardOutlined, KeyOutlined,
+    CreditCardOutlined,
+    KeyOutlined,
 } from "@ant-design/icons";
-import { Button, Input, Popover, Menu, Badge, Tooltip, Spin } from "antd";
+import {
+    Button,
+    Input,
+    Popover,
+    Menu,
+    Badge,
+    Tooltip,
+    Spin,
+    Image,
+} from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blue } from "@ant-design/colors";
 import { useEffect, useLayoutEffect, useState } from "react";
 import { logout, useUser } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
-import { Image } from "antd";
 
 const list = [
     {
@@ -56,7 +65,6 @@ const list = [
 ];
 
 const Nav = () => {
-    const { Search } = Input;
     const pathName = usePathname();
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
@@ -97,20 +105,22 @@ const Nav = () => {
     useEffect(() => {
         if (user?.admin) {
             if (menu[0].key !== "/admin") {
-                setMenu([{
-                    key: "/admin",
-                    icon: <KeyOutlined />,
-                    label: (
-                        <Link href="/user/admin">
-                            <span>Admin</span>
-                        </Link>
-                    ),
-                }, ...menu]);
+                setMenu([
+                    {
+                        key: "/admin",
+                        icon: <KeyOutlined />,
+                        label: (
+                            <Link href="/user/admin">
+                                <span>Admin</span>
+                            </Link>
+                        ),
+                    },
+                    ...menu,
+                ]);
             }
         }
     }, [user]);
 
-    // const onSearch = (value, _e, info) => console.log(info?.source, value);
     return (
         <nav>
             <div className="flex flex-row justify-between items-center h-14">
