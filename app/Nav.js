@@ -7,20 +7,20 @@ import {
     PoweroffOutlined,
     SettingOutlined,
     BellOutlined,
-    CreditCardOutlined,
+    CreditCardOutlined, KeyOutlined,
 } from "@ant-design/icons";
 import { Button, Input, Popover, Menu, Badge, Tooltip, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { blue } from "@ant-design/colors";
-import { useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import { logout, useUser } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
 import { Image } from "antd";
 
 const list = [
     {
-        key: "1",
+        key: "/",
         label: (
             <Link href="/">
                 <span>
@@ -30,7 +30,7 @@ const list = [
         ),
     },
     {
-        key: "2",
+        key: "/shirts",
         label: (
             <Link href="/shirts">
                 <span>Shirts</span>
@@ -38,7 +38,7 @@ const list = [
         ),
     },
     {
-        key: "3",
+        key: "/pants",
         label: (
             <Link href="/pants">
                 <span>Pants</span>
@@ -46,7 +46,7 @@ const list = [
         ),
     },
     {
-        key: "4",
+        key: "/accessories",
         label: (
             <Link href="/accessories">
                 <span>Accessories</span>
@@ -55,45 +55,60 @@ const list = [
     },
 ];
 
-const menu = [
-    {
-        key: "1",
-        icon: <SettingOutlined />,
-        label: (
-            <Link href="">
-                <span>Manage account</span>
-            </Link>
-        ),
-    },
-    {
-        key: "2",
-        icon: <CreditCardOutlined />,
-        label: (
-            <Link href="">
-                <span>Oders</span>
-            </Link>
-        ),
-    },
-    {
-        key: "3",
-        icon: <PoweroffOutlined />,
-        label: (
-            <Link href="">
-                <span>Sign out</span>
-            </Link>
-        ),
-    },
-];
-
 const Nav = () => {
     const { Search } = Input;
     const pathName = usePathname();
-    const user = useUser(null);
+    const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
+    const [menu, setMenu] = useState([
+        {
+            key: "1",
+            icon: <SettingOutlined />,
+            label: (
+                <Link href="">
+                    <span>Manage account</span>
+                </Link>
+            ),
+        },
+        {
+            key: "2",
+            icon: <CreditCardOutlined />,
+            label: (
+                <Link href="">
+                    <span>Oders</span>
+                </Link>
+            ),
+        },
+        {
+            key: "3",
+            icon: <PoweroffOutlined />,
+            label: (
+                <Link href="">
+                    <span>Sign out</span>
+                </Link>
+            ),
+        },
+    ]);
     const handleOpenChange = (newOpen) => {
         setOpen(newOpen);
     };
+
+    useEffect(() => {
+        if (user?.admin) {
+            if (menu[0].key !== "/admin") {
+                setMenu([{
+                    key: "/admin",
+                    icon: <KeyOutlined />,
+                    label: (
+                        <Link href="/user/admin">
+                            <span>Admin</span>
+                        </Link>
+                    ),
+                }, ...menu]);
+            }
+        }
+    }, [user]);
 
     // const onSearch = (value, _e, info) => console.log(info?.source, value);
     return (
@@ -147,6 +162,7 @@ const Nav = () => {
                         theme="dark"
                         mode="horizontal"
                         items={list}
+                        selectedKeys={[pathName]}
                         style={{
                             display: "flex",
                             justifyContent: "center",

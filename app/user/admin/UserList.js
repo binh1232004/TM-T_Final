@@ -5,22 +5,21 @@ import { deleteUser, getUsers } from "@/lib/firebase";
 import { ExclamationCircleFilled } from "@ant-design/icons";
 import { List, Modal } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
+import UserForm from "@/app/user/admin/UserForm";
 
 const { confirm } = Modal;
 
 export default function UserList() {
     const [users, setUsers] = useState({});
+    const [currentUser, setCurrentUser] = useState({});
     const [reload, setReload] = useState(false);
+    const [userModal, setUserModal] = useState(false);
 
     useEffect(() => {
         getUsers().then((data) => {
-            setUsers(data);
+            if (data.status === "success") setUsers(data.data);
         });
     }, [reload]);
-
-    useEffect(() => {
-        console.log(users);
-    }, [users]);
 
     const onDelete = (user) => {
         confirm({
@@ -41,7 +40,13 @@ export default function UserList() {
         });
     };
 
+    const onEdit = (user) => {
+        setUserModal(true);
+        setCurrentUser(user);
+    };
+
     return <div>
+        <UserForm user={currentUser} open={userModal} onClose={() => setUserModal(false)} onComplete={() => setReload(!reload)}></UserForm>
         <List
             size="small"
             bordered
@@ -50,7 +55,7 @@ export default function UserList() {
             })}
             pagination={{ position: "bottom", align: "center" }}
             renderItem={(item) => {
-                return <UserListItem user={item} onDelete={onDelete}></UserListItem>;
+                return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}></UserListItem>;
             }}
         />
     </div>;
