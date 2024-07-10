@@ -1,11 +1,13 @@
 "use client";
 
-import { Button, Checkbox, DatePicker, Form, Input, Modal, Select, Switch } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Select, Switch } from "antd";
 import { useEffect, useState } from "react";
 import moment from "moment";
-
+import { updateUserAdmin, updateUserInfo } from "@/lib/firebase";
+import { useMessage } from "@/lib/utils";
 
 export default function UserForm({ user, open = false, onClose = null, onComplete = null }) {
+    const { loading, success, contextHolder } = useMessage();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
 
@@ -21,8 +23,24 @@ export default function UserForm({ user, open = false, onClose = null, onComplet
     };
 
     const onFinish = (values) => {
-        console.log(values);
-        // TODO: update user info
+        const result = {
+            name: values.name,
+            phone: values.phone || "",
+            gender: values.gender || "",
+            birthday: values.birthday?.toString() || "",
+        };
+
+        const destroy = loading("Saving...");
+        updateUserInfo(user.uid, result).then(() => {
+            updateUserAdmin(user.uid, values.admin).then(() => {
+                closeModal();
+                destroy();
+                success("User info saved");
+                if (onComplete) {
+                    onComplete();
+                }
+            });
+        });
     };
 
     useEffect(() => {
@@ -32,8 +50,8 @@ export default function UserForm({ user, open = false, onClose = null, onComplet
     useEffect(() => {
         if (isModalOpen) {
             user?.info?.name && form.setFieldsValue({ name: user.info.name });
-            user?.info?.name && form.setFieldsValue({ phone: user.info.phone });
-            user?.info?.name && form.setFieldsValue({ gender: user.info.gender });
+            user?.info?.phone && form.setFieldsValue({ phone: user.info.phone });
+            user?.info?.gender && form.setFieldsValue({ gender: user.info.gender });
             user?.info?.birthday && form.setFieldsValue({ birthday: new moment(user.info.birthday) });
             form.setFieldsValue({ admin: user.admin });
         }
@@ -42,6 +60,7 @@ export default function UserForm({ user, open = false, onClose = null, onComplet
     return <Modal title="Edit user info" open={isModalOpen} onOk={closeModal}
                   onCancel={closeModal} footer={null} destroyOnClose style={{ top: 20 }}
                   forceRender afterClose={clearForm}>
+        {contextHolder}
         <Form
             form={form}
             layout="horizontal"

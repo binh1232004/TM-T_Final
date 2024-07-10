@@ -1,12 +1,12 @@
-import { Button, Form, Input, InputNumber, message, Modal, Select, Upload } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Select, Upload } from "antd";
 import { useEffect, useState } from "react";
-import { numberWithSeps, parseNumberWithSeps } from "@/lib/utils";
+import { numberWithSeps, parseNumberWithSeps, useMessage } from "@/lib/utils";
 import { UploadOutlined } from "@ant-design/icons";
 import { updateProduct } from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 
 export default function ProductForm({ product, open = false, onClose = null, onComplete = null }) {
-    const [messageApi, contextHolder] = message.useMessage();
+    const { error, loading, success, contextHolder } = useMessage();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
     const [catalog, setCatalog] = useState([]);
@@ -58,32 +58,6 @@ export default function ProductForm({ product, open = false, onClose = null, onC
             destroy();
             error("Save product failed " + e.message);
         });
-    };
-
-    const error = (message) => {
-        messageApi.open({
-            type: "error",
-            content: message,
-        }).then(() => {
-        });
-    };
-
-    const success = (message) => {
-        messageApi.open({
-            type: "success",
-            content: message,
-        }).then(() => {
-        });
-    };
-
-    const loading = (message) => {
-        messageApi.open({
-            type: "loading",
-            content: message,
-            duration: 0
-        }).then(() => {
-        });
-        return messageApi.destroy;
     };
 
     useEffect(() => {

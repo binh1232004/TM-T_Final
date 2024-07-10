@@ -3,7 +3,7 @@
 import { Button, List, Typography } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
-const { Text, Link } = Typography;
+const { Text } = Typography;
 
 export default function UserListItem({ user, onEdit = null, onDelete = null }) {
 
@@ -17,7 +17,7 @@ export default function UserListItem({ user, onEdit = null, onDelete = null }) {
             </div>
             <div className="flex flex-row gap-2 h-fit my-auto">
                 {user.deleted ? <Button size="small" type="primary" danger onClick={() => {
-
+                    // TODO: find a way to delete user data
                 }}>Delete data</Button> : null}
                 <Button size="small" disabled={user.deleted} type="default" onClick={() => {
                     if (onEdit) {

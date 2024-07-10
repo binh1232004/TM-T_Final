@@ -1,12 +1,13 @@
 "use client";
 
-import { Button, DatePicker, Form, Input, message, Modal, Select } from "antd";
+import { Button, DatePicker, Form, Input, Modal, Select } from "antd";
 import { createUser, login } from "@/lib/firebase";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
+import { LockOutlined, UserOutlined } from "@ant-design/icons";
 import { useLayoutEffect, useState } from "react";
+import { useMessage } from "@/lib/utils";
 
 export const LoginForm = ({ onClose = null, open = false }) => {
-    const [messageApi, contextHolder] = message.useMessage();
+    const { error, success, contextHolder } = useMessage();
     const [register, setRegister] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -17,22 +18,6 @@ export const LoginForm = ({ onClose = null, open = false }) => {
             onClose();
         }
     }
-
-    const error = (message) => {
-        messageApi.open({
-            type: "error",
-            content: message,
-        }).then(() => {
-        });
-    };
-
-    const success = (message) => {
-        messageApi.open({
-            type: "success",
-            content: message,
-        }).then(() => {
-        });
-    };
 
     const onFinish = (values) => {
         if (register) {
