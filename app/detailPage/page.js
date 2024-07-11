@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import './global.css';
 import SizeButton from '/components/detailPage/sizeButton.js';
-export default function DetailPage({ imageURL, title, price }) {
+export default function DetailPage({ imageURL, title, price, idProduct }) {
     const [chosenSize, setChosenSize] = useState('null');
     const router = useRouter();
     const handleClick = () => {
