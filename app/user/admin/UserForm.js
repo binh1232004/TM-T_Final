@@ -2,9 +2,9 @@
 
 import { Button, DatePicker, Form, Input, Modal, Select, Switch } from "antd";
 import { useEffect, useState } from "react";
-import moment from "moment";
 import { updateUserAdmin, updateUserInfo } from "@/lib/firebase";
 import { useMessage } from "@/lib/utils";
+import dayjs from "dayjs";
 
 const Form_ = ({ form, onFinish, closeModal, modal }) => {
     return <Form
@@ -47,7 +47,9 @@ const Form_ = ({ form, onFinish, closeModal, modal }) => {
             </Select>
         </Form.Item>
         <Form.Item name="birthday" label="Birthday" valuePropName="value">
-            <DatePicker format="YYYY/MM/DD"/>
+            <DatePicker multiple={false} onChange={(e) => {
+                console.log(e);
+            }}/>
         </Form.Item>
         {modal ? <Form.Item
             name="admin"
@@ -125,10 +127,10 @@ export default function UserForm({ user, open = false, onClose = null, onComplet
             user?.info?.name && form.setFieldsValue({ name: user.info.name });
             user?.info?.phone && form.setFieldsValue({ phone: user.info.phone });
             user?.info?.gender && form.setFieldsValue({ gender: user.info.gender });
-            user?.info?.birthday && form.setFieldsValue({ birthday: new moment(user.info.birthday) });
+            user?.info?.birthday && form.setFieldsValue({ birthday: new dayjs(user.info.birthday) });
             form.setFieldsValue({ admin: user.admin });
         }
-    }, [user, isModalOpen]);
+    }, [user, isModalOpen, modal, form]);
 
     if (modal) {
         return <Modal title="Edit user info" open={isModalOpen} onOk={closeModal}

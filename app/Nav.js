@@ -1,87 +1,49 @@
 "use client";
 
 import {
-    HomeOutlined,
-    ShoppingCartOutlined,
-    UserOutlined,
-    PoweroffOutlined,
-    SettingOutlined,
     BellOutlined,
     CreditCardOutlined,
+    HomeOutlined,
     KeyOutlined,
+    PoweroffOutlined,
+    SettingOutlined,
+    ShoppingCartOutlined,
+    UserOutlined,
 } from "@ant-design/icons";
-import {
-    Button,
-    Input,
-    Popover,
-    Menu,
-    Badge,
-    Tooltip,
-    Spin,
-    Image,
-} from "antd";
+import { Badge, Button, Menu, Popover, Spin, Tooltip, } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { blue } from "@ant-design/colors";
-import { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { logout, useUser } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
-
-const list = [
-    {
-        key: "/",
-        label: (
-            <Link href="/">
-                <span>
-                    <HomeOutlined /> Home
-                </span>
-            </Link>
-        ),
-    },
-    {
-        key: "/shirts",
-        label: (
-            <Link href="/shirts">
-                <span>Shirts</span>
-            </Link>
-        ),
-    },
-    {
-        key: "/pants",
-        label: (
-            <Link href="/pants">
-                <span>Pants</span>
-            </Link>
-        ),
-    },
-    {
-        key: "/accessories",
-        label: (
-            <Link href="/accessories">
-                <span>Accessories</span>
-            </Link>
-        ),
-    },
-];
+import { getCatalogs } from "@/lib/firebase_server";
 
 const Nav = () => {
     const pathName = usePathname();
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
-    const [menu, setMenu] = useState([
+    const [nav, setNav] = useState([{
+        key: "/",
+        label: <Link href="/">
+            <span>
+                <HomeOutlined/> Home
+            </span>
+        </Link>,
+    }]);
+    const [userMenu, setUserMenu] = useState([
         {
             key: "1",
-            icon: <SettingOutlined />,
+            icon: <SettingOutlined/>,
             label: (
-                <Link href="">
+                <Link href={"/user"}>
                     <span>Manage account</span>
                 </Link>
             ),
         },
         {
             key: "2",
-            icon: <CreditCardOutlined />,
+            icon: <CreditCardOutlined/>,
             label: (
                 <Link href="">
                     <span>Oders</span>
@@ -90,7 +52,7 @@ const Nav = () => {
         },
         {
             key: "3",
-            icon: <PoweroffOutlined />,
+            icon: <PoweroffOutlined/>,
             label: (
                 <Link href="">
                     <span>Sign out</span>
@@ -103,19 +65,42 @@ const Nav = () => {
     };
 
     useEffect(() => {
+        getCatalogs().then((data) => {
+            setNav([{
+                key: "/",
+                label: <Link href="/">
+                        <span>
+                            <HomeOutlined/> Home
+                        </span>
+                </Link>,
+            },
+                ...Object.keys(data).map((key) => {
+                    return {
+                        key: `/${data[key].name.toLowerCase()}`,
+                        label: <Link href={`/${data[key].name.toLowerCase()}`}>
+                        <span>
+                            {data[key].name}
+                        </span>
+                        </Link>,
+                    };
+                })]);
+        });
+    }, []);
+
+    useEffect(() => {
         if (user?.admin) {
-            if (menu[0].key !== "/admin") {
-                setMenu([
+            if (userMenu[0].key !== "/admin") {
+                setUserMenu([
                     {
                         key: "/admin",
-                        icon: <KeyOutlined />,
+                        icon: <KeyOutlined/>,
                         label: (
-                            <Link href="/user/admin">
+                            <Link href={"/user/admin"}>
                                 <span>Admin</span>
                             </Link>
                         ),
                     },
-                    ...menu,
+                    ...userMenu,
                 ]);
             }
         }
@@ -131,7 +116,7 @@ const Nav = () => {
                 <div className="">
                     <Button
                         className="!border-none !text-white !bg-transparent hover:!text-blue-500"
-                        icon={<UserOutlined style={{ fontSize: "20px" }} />}
+                        icon={<UserOutlined style={{ fontSize: "20px" }}/>}
                         onClick={() => {
                             if (user) setOpen(true);
                             else setLoginForm(!loginForm);
@@ -140,14 +125,14 @@ const Nav = () => {
                         {user !== undefined ? (
                             user?.email || "Sign in"
                         ) : (
-                            <Spin size="small" />
+                            <Spin size="small"/>
                         )}
                     </Button>
                     <Popover
                         content={
                             <Menu
                                 mode="inline"
-                                items={menu}
+                                items={userMenu}
                                 onClick={(item) => {
                                     if (item.key === "3") {
                                         logout().then(() => setOpen(false));
@@ -171,8 +156,9 @@ const Nav = () => {
                     <Menu
                         theme="dark"
                         mode="horizontal"
-                        items={list}
+                        items={nav}
                         selectedKeys={[pathName]}
+                        className="w-full"
                         style={{
                             display: "flex",
                             justifyContent: "center",
@@ -210,7 +196,7 @@ const Nav = () => {
                                 count={2}
                                 className="!text-white group-hover:!text-blue-500"
                             >
-                                <BellOutlined style={{ fontSize: "25px" }} />
+                                <BellOutlined style={{ fontSize: "25px" }}/>
                             </Badge>
                         </Button>
                     </Tooltip>
