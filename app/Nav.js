@@ -1,5 +1,8 @@
 "use client";
 
+import { LoginForm } from "@/app/LoginForm";
+import { getCart, logout, useUser } from "@/lib/firebase";
+import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
     CreditCardOutlined,
@@ -10,13 +13,10 @@ import {
     ShoppingCartOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Menu, Popover, Spin, Tooltip, } from "antd";
+import { Badge, Button, Menu, Popover, Spin, Input } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCart, logout, useUser } from "@/lib/firebase";
-import { LoginForm } from "@/app/LoginForm";
-import { getCatalogs } from "@/lib/firebase_server";
 
 const Nav = () => {
     const pathName = usePathname();
@@ -25,18 +25,22 @@ const Nav = () => {
     const [open, setOpen] = useState(false);
     const [cartCount, setCartCount] = useState(0);
     const [loaded, setLoaded] = useState(false);
-    const [nav, setNav] = useState([{
-        key: "/",
-        label: <Link href="/">
-            <span>
-                <HomeOutlined/> Home
-            </span>
-        </Link>,
-    }]);
+    const [nav, setNav] = useState([
+        {
+            key: "/",
+            label: (
+                <Link href="/">
+                    <span>
+                        <HomeOutlined /> Home
+                    </span>
+                </Link>
+            ),
+        },
+    ]);
     const [userMenu, setUserMenu] = useState([
         {
             key: "1",
-            icon: <SettingOutlined/>,
+            icon: <SettingOutlined />,
             label: (
                 <Link href={"/user"}>
                     <span>Manage account</span>
@@ -45,7 +49,7 @@ const Nav = () => {
         },
         {
             key: "2",
-            icon: <CreditCardOutlined/>,
+            icon: <CreditCardOutlined />,
             label: (
                 <Link href={"/user/orders"}>
                     <span>Oders</span>
@@ -54,7 +58,7 @@ const Nav = () => {
         },
         {
             key: "3",
-            icon: <PoweroffOutlined/>,
+            icon: <PoweroffOutlined />,
             label: (
                 <Link href="">
                     <span>Sign out</span>
@@ -65,27 +69,32 @@ const Nav = () => {
     const handleOpenChange = (newOpen) => {
         setOpen(newOpen);
     };
+    const { Search } = Input;
 
     useEffect(() => {
         getCatalogs().then((data) => {
-            setNav([{
-                key: "/",
-                label: <Link href="/">
-                        <span>
-                            <HomeOutlined/> Home
-                        </span>
-                </Link>,
-            },
+            setNav([
+                {
+                    key: "/",
+                    label: (
+                        <Link href="/">
+                            <span>
+                                <HomeOutlined /> Home
+                            </span>
+                        </Link>
+                    ),
+                },
                 ...Object.keys(data).map((key) => {
                     return {
                         key: `/${data[key].name.toLowerCase()}`,
-                        label: <Link href={`/${data[key].name.toLowerCase()}`}>
-                        <span>
-                            {data[key].name}
-                        </span>
-                        </Link>,
+                        label: (
+                            <Link href={`/${data[key].name.toLowerCase()}`}>
+                                <span>{data[key].name}</span>
+                            </Link>
+                        ),
                     };
-                })]);
+                }),
+            ]);
             setLoaded(true);
         });
     }, []);
@@ -96,7 +105,7 @@ const Nav = () => {
                 setUserMenu([
                     {
                         key: "/admin",
-                        icon: <KeyOutlined/>,
+                        icon: <KeyOutlined />,
                         label: (
                             <Link href={"/user/admin"}>
                                 <span>Admin</span>
@@ -112,109 +121,111 @@ const Nav = () => {
         }
     }, [user, userMenu]);
 
-    return loaded && (
-        <nav>
-            <div className="flex flex-row justify-between items-center h-14">
-                <LoginForm
-                    open={loginForm}
-                    onClose={() => setLoginForm(false)}
-                />
-                <div className="">
-                    <Button
-                        className="!border-none !text-white !bg-transparent hover:!text-blue-500"
-                        icon={<UserOutlined style={{ fontSize: "20px" }}/>}
-                        onClick={() => {
-                            if (user) setOpen(true);
-                            else setLoginForm(!loginForm);
-                        }}
-                    >
-                        {user !== undefined ? (
-                            user?.email || "Sign in"
-                        ) : (
-                            <Spin size="small"/>
-                        )}
-                    </Button>
-                    <Popover
-                        content={
-                            <Menu
-                                mode="inline"
-                                items={userMenu}
-                                onClick={(item) => {
-                                    if (item.key === "3") {
-                                        logout().then(() => {
-                                            setOpen(false);
-                                            setCartCount(0);
-                                        });
-                                    } else {
-                                        setOpen(false);
-                                    }
-                                }}
-                                selectedKeys={[]}
-                            />
-                        }
-                        // title="Title"
-                        trigger="click"
-                        open={open}
-                        placement="bottomLeft"
-                        onOpenChange={handleOpenChange}
-                        defaultSelectedKeys={[]}
-                        className="absolute left-10 top-12"
+    return (
+        loaded && (
+            <nav>
+                <div className="flex flex-row justify-between items-center h-14">
+                    <LoginForm
+                        open={loginForm}
+                        onClose={() => setLoginForm(false)}
                     />
-                </div>
-                <div className="h-full w-full !flex gap-8 !justify-center !items-center">
-                    <Menu
-                        theme="dark"
-                        mode="horizontal"
-                        items={nav}
-                        selectedKeys={[pathName]}
-                        className="w-full"
-                        style={{
-                            display: "flex",
-                            justifyContent: "center",
-                        }}
-                    />
-                </div>
-                <div className="flex justify-center items-center mx-3 my-5">
-                    <Tooltip
-                        placement="bottom"
-                        title="Cart"
-                        color="white"
-                        overlayInnerStyle={{ color: "black" }}
-                    >
-                        <Button className="!border-none !bg-transparent !text-white group">
-                            <Badge
-                                size="small"
-                                count={cartCount}
-                                className="!text-white group-hover:!text-blue-500 !outline-none"
-                                classNames={{
-                                    indicator: "!shadow-none",
-                                }}
-                            >
-                                <ShoppingCartOutlined
-                                    style={{ fontSize: "25px" }}
-                                />
-                            </Badge>
+                    <div className="">
+                        <Button
+                            className="!border-none !text-white !bg-transparent hover:!text-blue-500"
+                            icon={<UserOutlined style={{ fontSize: "20px" }} />}
+                            onClick={() => {
+                                if (user) setOpen(true);
+                                else setLoginForm(!loginForm);
+                            }}
+                        >
+                            {user !== undefined ? (
+                                user?.email || "Sign in"
+                            ) : (
+                                <Spin size="small" />
+                            )}
                         </Button>
-                    </Tooltip>
-                    <Tooltip
-                        placement="bottom"
-                        title="Notification"
-                        color="white"
-                        overlayInnerStyle={{ color: "black" }}
-                    >
+                        <Popover
+                            content={
+                                <Menu
+                                    mode="inline"
+                                    items={userMenu}
+                                    onClick={(item) => {
+                                        if (item.key === "3") {
+                                            logout().then(() => {
+                                                setOpen(false);
+                                                setCartCount(0);
+                                            });
+                                        } else {
+                                            setOpen(false);
+                                        }
+                                    }}
+                                    selectedKeys={[]}
+                                />
+                            }
+                            // title="Title"
+                            trigger="click"
+                            open={open}
+                            placement="bottomLeft"
+                            onOpenChange={handleOpenChange}
+                            defaultSelectedKeys={[]}
+                            className="absolute left-10 top-12"
+                        />
+                    </div>
+                    <div className="h-full w-fit !flex gap-8 !justify-center !items-center">
+                        <Menu
+                            theme="dark"
+                            mode="horizontal"
+                            items={nav}
+                            selectedKeys={[pathName]}
+                            className="w-full"
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
+                        />
+                    </div>
+                    <div className="flex justify-center items-center w-96">
+                        <Search
+                            placeholder="input search text"
+                            enterButton="Search"
+                            // style={{width:"500px md:300px"}}
+                            // size="large"
+                            // onSearch={onSearch}
+                        />
+                    </div>
+                    <div className="flex justify-center items-center mx-3 my-5">
+                        <div className="translate-y-1">
+                            <Link
+                                href="/user/cart"
+                                className="!border-none !bg-transparent !text-white group"
+                            >
+                                <Badge
+                                    size="small"
+                                    count={cartCount}
+                                    className="!text-white group-hover:!text-blue-500 !outline-none"
+                                    classNames={{
+                                        indicator: "!shadow-none",
+                                    }}
+                                >
+                                    <ShoppingCartOutlined
+                                        style={{ fontSize: "25px" }}
+                                    />
+                                </Badge>
+                            </Link>
+                        </div>
                         <Button className="!border-none !bg-transparent group">
                             <Badge
                                 size="small"
                                 count={0}
                                 className="!text-white group-hover:!text-blue-500"
                             >
-                                <BellOutlined style={{ fontSize: "25px" }}/>
+                                <BellOutlined style={{ fontSize: "25px" }} />
                             </Badge>
                         </Button>
-                    </Tooltip>
+                    </div>
                 </div>
-            </div>
-        </nav>
+            </nav>
+        )
     );
 };
 
