@@ -198,6 +198,7 @@ export default function ProductForm({ product, open = false, onClose = null, onC
                     getValueFromEvent={normFile}
                     rules={[{ required: true, message: "Please upload at least 1 image!" }]}
                 >
+                    {/*TODO: add order button*/}
                     <Upload listType="picture" beforeUpload={file => {
                         const validType = file.type === "image/jpeg" || file.type === "image/png";
                         if (!validType) {

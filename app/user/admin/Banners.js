@@ -1,7 +1,7 @@
 "use client";
 
 import { Button, Upload } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { DownOutlined, UploadOutlined, UpOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
 import { getBanners, updateBanners } from "@/lib/firebase";
 import { useMessage } from "@/lib/utils";
@@ -32,8 +32,8 @@ export default function Banners() {
         const destroy = loading("Saving...");
         updateBanners(banners.map(banner => {
             return {
-                image: banner.image,
-                link: banner.link,
+                image: banner?.image || banner.url,
+                link: banner.link || "#",
             };
         })).then((result) => {
             if (result.status === "success") {
@@ -63,19 +63,51 @@ export default function Banners() {
         });
     }, [reload]);
 
-    useEffect(() => {
-        console.log(banners);
-    }, [banners]);
-
     return <div className="max-w-96">
         {contextHolder}
-        <Upload fileList={banners} listType="picture" onChange={normFile} beforeUpload={file => {
-            const validType = file.type === "image/jpeg" || file.type === "image/png";
-            if (!validType) {
-                error("You can only upload JPG/PNG file!");
-            }
-            return validType || Upload.LIST_IGNORE;
-        }}>
+        <Upload
+            fileList={banners}
+            listType="picture"
+            onChange={normFile}
+            itemRender={(originNode, file) => {
+                return <div className="flex flex-row w-full">
+                    <div className="w-full">
+                        {originNode}
+                    </div>
+                    <div className="flex flex-col justify-center">
+                        <Button size="small" type="text" disabled={
+                            banners.indexOf(file) === 0
+                        } onClick={
+                            () => {
+                                const index = banners.indexOf(file);
+                                const newBanners = [...banners];
+                                [newBanners[index], newBanners[index - 1]] = [newBanners[index - 1], newBanners[index]];
+                                setBanners(newBanners);
+                                setEdited(true);
+                            }
+                        }><UpOutlined/></Button>
+                        <Button size="small" type="text" disabled={
+                            banners.indexOf(file) === banners.length - 1
+                        } onClick={
+                            () => {
+                                const index = banners.indexOf(file);
+                                const newBanners = [...banners];
+                                [newBanners[index], newBanners[index + 1]] = [newBanners[index + 1], newBanners[index]];
+                                setBanners(newBanners);
+                                setEdited(true);
+                            }
+                        }><DownOutlined/></Button>
+                    </div>
+                </div>;
+            }}
+            beforeUpload={file => {
+                const validType = file.type === "image/jpeg" || file.type === "image/png";
+                if (!validType) {
+                    error("You can only upload JPG/PNG file!");
+                }
+                return validType || Upload.LIST_IGNORE;
+            }}
+        >
             <Button icon={<UploadOutlined/>}>Upload</Button>
         </Upload>
         <Button disabled={!edited} className="!my-2 !ml-auto" type="primary" onClick={onSave}>Save</Button>
