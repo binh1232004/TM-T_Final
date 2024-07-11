@@ -1,3 +1,4 @@
+'use client';
 export default function SizeButton({ size, chosenSize, setChosenSize }) {
     const isActive = chosenSize === size;
     const buttonClassNotActive =
