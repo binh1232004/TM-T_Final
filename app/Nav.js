@@ -14,7 +14,7 @@ import { Badge, Button, Menu, Popover, Spin, Tooltip, } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { logout, useUser } from "@/lib/firebase";
+import { getCart, logout, useUser } from "@/lib/firebase";
 import { LoginForm } from "@/app/LoginForm";
 import { getCatalogs } from "@/lib/firebase_server";
 
@@ -23,6 +23,8 @@ const Nav = () => {
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
+    const [cartCount, setCartCount] = useState(0);
+    const [loaded, setLoaded] = useState(false);
     const [nav, setNav] = useState([{
         key: "/",
         label: <Link href="/">
@@ -84,6 +86,7 @@ const Nav = () => {
                         </Link>,
                     };
                 })]);
+            setLoaded(true);
         });
     }, []);
 
@@ -104,9 +107,12 @@ const Nav = () => {
                 ]);
             }
         }
-    }, [user]);
+        if (user) {
+            setCartCount(getCart(user).length);
+        }
+    }, [user, userMenu]);
 
-    return (
+    return loaded && (
         <nav>
             <div className="flex flex-row justify-between items-center h-14">
                 <LoginForm
@@ -135,7 +141,10 @@ const Nav = () => {
                                 items={userMenu}
                                 onClick={(item) => {
                                     if (item.key === "3") {
-                                        logout().then(() => setOpen(false));
+                                        logout().then(() => {
+                                            setOpen(false);
+                                            setCartCount(0);
+                                        });
                                     } else {
                                         setOpen(false);
                                     }
@@ -175,8 +184,11 @@ const Nav = () => {
                         <Button className="!border-none !bg-transparent !text-white group">
                             <Badge
                                 size="small"
-                                count={5}
-                                className="!text-white group-hover:!text-blue-500"
+                                count={cartCount}
+                                className="!text-white group-hover:!text-blue-500 !outline-none"
+                                classNames={{
+                                    indicator: "!shadow-none",
+                                }}
                             >
                                 <ShoppingCartOutlined
                                     style={{ fontSize: "25px" }}
@@ -193,7 +205,7 @@ const Nav = () => {
                         <Button className="!border-none !bg-transparent group">
                             <Badge
                                 size="small"
-                                count={2}
+                                count={0}
                                 className="!text-white group-hover:!text-blue-500"
                             >
                                 <BellOutlined style={{ fontSize: "25px" }}/>

@@ -10,7 +10,6 @@ export default function Home() {
     useEffect(() => {
         getCatalogs().then((data) => {
             setCatalogs(data);
-            console.log(data);
         });
     }, []);
 

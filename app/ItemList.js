@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { getProducts } from "@/lib/firebase_server";
-import { Card, Image, Spin, Typography } from "antd";
+import { Badge, Card, Divider, Image, Spin, Tag, Typography } from "antd";
 import Link from "next/link";
 
-const { Title } = Typography;
+const { Title, Paragraph, Text } = Typography;
 
 const width = "w-36";
 
@@ -49,13 +49,25 @@ export default function ItemList({
 };
 
 const Contents = ({ products }) => {
-    return Object.keys(products).map((key) => {
-        return <div key={key} className={`rounded-lg relative ${width} h-full transition-all`}>
-            <Card hoverable cover={<Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
-                                          preview={false}/>}>
-                <p>{products[key].name}</p>
-                <p>${products[key].price}</p>
-            </Card>
-        </div>;
+    return Object.keys(products).map((key, i) => {
+        return <Link href={`/products/${products[key].id}-${products[key].name}`} key={key}
+                     className={`rounded-lg relative ${width} h-full transition-all`}>
+            <Badge.Ribbon text="Newest" className={i === 0 ? "" : "hidden"}>
+                <Card hoverable
+                      cover={<Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
+                                    preview={false}/>}
+                      classNames={{
+                          body: "!p-0 !m-2 !h-24"
+                      }}
+                >
+                    <div className="h-full flex flex-col justify-between">
+                        <Paragraph ellipsis={{ rows: 2 }}>{products[key].name}</Paragraph>
+                        {/*<Text>${products[key].price}</Text>*/}
+                        <Divider className="!m-0 !mt-auto !mb-1"/>
+                        <Tag color="blue" className="w-fit">${products[key].price}</Tag>
+                    </div>
+                </Card>
+            </Badge.Ribbon>
+        </Link>;
     });
 };

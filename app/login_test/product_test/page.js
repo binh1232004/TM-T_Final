@@ -9,14 +9,12 @@ export default function ProductTest() {
     useEffect(() => {
         if (user) {
             console.log(user);
-            setCart(user, {
-                items: [
+            setCart(user, [
                     { id: "abc", variant: "s", quantity: 1 },
                     { id: "abde", variant: "s", quantity: 1 },
                     { id: "abc", variant: "s", quantity: 1 },
                     { id: "abc", variant: "s", quantity: 1 }
-                ]
-            }).then(() => {
+            ]).then(() => {
                 console.log(getCart(user));
             });
         }
