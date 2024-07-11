@@ -5,7 +5,7 @@ import { getProducts } from "@/lib/firebase_server";
 import { Badge, Card, Divider, Image, Spin, Tag, Typography } from "antd";
 import Link from "next/link";
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 
 const width = "w-36";
 
@@ -25,7 +25,7 @@ export default function ItemList({
                 setProducts(data);
             }
         });
-    }, []);
+    }, [catalog, limit, sort]);
 
     return <Spin spinning={Object.keys(products).length === 0}>
         <Card title={<Title level={3} className="!my-auto">{title}</Title>} className={full ? "!mx-0" : "!mx-12"}
@@ -62,7 +62,6 @@ const Contents = ({ products }) => {
                 >
                     <div className="h-full flex flex-col justify-between">
                         <Paragraph ellipsis={{ rows: 2 }}>{products[key].name}</Paragraph>
-                        {/*<Text>${products[key].price}</Text>*/}
                         <Divider className="!m-0 !mt-auto !mb-1"/>
                         <Tag color="blue" className="w-fit">${products[key].price}</Tag>
                     </div>
