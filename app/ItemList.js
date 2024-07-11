@@ -58,13 +58,16 @@ const Contents = ({ products, catalog }) => {
                       cover={<Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
                                     preview={false}/>}
                       classNames={{
-                          body: "!p-0 !m-2 !h-24"
+                          body: "!p-0 !m-2 !h-[5.5rem]",
+                          cover: "border-2 border-gray-100 rounded-t-lg",
                       }}
                 >
                     <div className="h-full flex flex-col justify-between">
                         <Paragraph ellipsis={{ rows: 2 }}>{products[key].name}</Paragraph>
                         <Divider className="!m-0 !mt-auto !mb-1"/>
-                        <Tag color="blue" className="w-fit">${numberWithSeps(products[key].price)}</Tag>
+                        <Tag color="blue" className="w-fit">
+                            <span className="text-[0.9rem]">${numberWithSeps(products[key].price)}</span>
+                        </Tag>
                     </div>
                 </Card>
             </Badge.Ribbon>
