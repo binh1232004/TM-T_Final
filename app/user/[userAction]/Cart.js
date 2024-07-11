@@ -83,6 +83,7 @@ export default function Cart() {
     const user = useUser();
     const [cart, setCart] = useState([]);
     const [loaded, setLoaded] = useState(false);
+    const [checkOut, setCheckOut] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -103,6 +104,13 @@ export default function Cart() {
     useEffect(() => {
         if (!user || !loaded) return;
         const destroy = loading("Updating cart...");
+        setCheckOut(() => {
+            if (cart.length === 0) return false;
+            for (let i = 0; i < cart.length; i++) {
+                if (cart[i].checked) return true;
+            }
+            return false;
+        });
         setCartDb(user, cart.map(item => {
             return {
                 id: item.id,
@@ -191,7 +199,7 @@ export default function Cart() {
                     <div className="my-auto">
                         <p>Total</p>
                     </div>
-                    <Button type="primary" onClick={() => {
+                    <Button disabled={!checkOut} type="primary" onClick={() => {
                         console.log(cart.filter((item) => item.checked));
                     }}>Checkout</Button>
                 </div>
