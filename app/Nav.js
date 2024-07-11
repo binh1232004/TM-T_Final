@@ -47,7 +47,7 @@ const Nav = () => {
             key: "2",
             icon: <CreditCardOutlined/>,
             label: (
-                <Link href="">
+                <Link href={"/user/orders"}>
                     <span>Oders</span>
                 </Link>
             ),

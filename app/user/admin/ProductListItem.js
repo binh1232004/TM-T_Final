@@ -31,14 +31,10 @@ export default function ProductListItem({ product, onEdit = null, onDelete = nul
             </div>
             <div className="flex flex-row gap-2 h-fit my-auto">
                 <Button size="small" type="default" onClick={() => {
-                    if (onEdit) {
-                        onEdit(product);
-                    }
+                    onEdit?.(product);
                 }}><EditOutlined/></Button>
                 <Button size="small" type="primary" danger onClick={() => {
-                    if (onDelete) {
-                        onDelete(product);
-                    }
+                    onDelete?.(product);
                 }}><DeleteOutlined/></Button>
             </div>
         </div>
