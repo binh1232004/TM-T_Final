@@ -21,7 +21,6 @@ export default function ProductForm({ product, open = false, onClose = null, onC
     };
 
     const normFile = (e) => {
-        console.log("Upload event:", e);
         if (Array.isArray(e)) {
             return e;
         }

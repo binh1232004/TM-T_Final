@@ -3,40 +3,33 @@
 import ItemList from "@/app/ItemList";
 import { getCatalogs } from "@/lib/firebase_server";
 import { useEffect, useState } from "react";
-import { Carousel } from "antd";
-
-const contentStyle = {
-    height: "30rem",
-    color: "#fff",
-    lineHeight: "160px",
-    textAlign: "center",
-    background: "#364d79",
-};
+import { Carousel, Image } from "antd";
+import { getBanners } from "@/lib/firebase";
+import Link from "next/link";
 
 export default function Home() {
     const [catalogs, setCatalogs] = useState({});
+    const [banners, setBanners] = useState([]);
 
     useEffect(() => {
         getCatalogs().then((data) => {
             setCatalogs(data);
+        });
+        getBanners().then((data) => {
+            if (data.status === "success") {
+                setBanners(data.data);
+            }
         });
     }, []);
 
     return (
         <div>
             <Carousel autoplay>
-                <div>
-                    <h3 style={contentStyle}>1</h3>
-                </div>
-                <div>
-                    <h3 style={contentStyle}>2</h3>
-                </div>
-                <div>
-                    <h3 style={contentStyle}>3</h3>
-                </div>
-                <div>
-                    <h3 style={contentStyle}>4</h3>
-                </div>
+                {banners.map((banner, i) => {
+                    return <Link href={banner.link} key={i} className="!my-auto w-full !flex flex-row justify-center">
+                        <Image src={banner.image} className="w-full !mx-auto" preview={false}></Image>
+                    </Link>;
+                })}
             </Carousel>
             {Object.keys(catalogs).map((key) => {
                 return <div key={key} className="my-2">
