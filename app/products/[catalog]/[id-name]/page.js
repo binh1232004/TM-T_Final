@@ -38,9 +38,9 @@ export default function Page({ params }) {
     };
 
     return Object.keys(product).length ? (
-        <div className="bg-white m-8 rounded-lg grid-cols-2 grid">
+        <div className="bg-white m-8 rounded-lg flex flex-row">
             {contextHolder}
-            <div className="px-16 py-2">
+            <div className="p-3 w-[38%]">
                 <Carousel autoplay arrows className="!overflow-hidden !rounded-lg">
                     {product.images.map((image, i) => {
                         return <div key={i}>
@@ -52,7 +52,7 @@ export default function Page({ params }) {
                     })}
                 </Carousel>
             </div>
-            <div className="border-l-2 border-gray-300 px-8 py-2 my-6">
+            <div className="px-8 py-2 my-6 w-full">
                 <Title>{product.name}</Title>
                 <Text className="!text-lg !my-2">{product.description}</Text>
                 <div className="flex flex-row gap-2 my-2">
