@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { getProducts } from "@/lib/firebase_server";
 import { Badge, Card, Divider, Image, Spin, Tag, Typography } from "antd";
 import Link from "next/link";
+import { numberWithSeps } from "@/lib/utils";
 
 const { Title, Paragraph } = Typography;
 
@@ -34,13 +35,13 @@ export default function ItemList({
                 <div className="w-full overflow-x-scroll bg-white">
                     <div
                         className="flex flex-row gap-2 py-2 px-6 m-auto place-items-center w-fit">
-                        <Contents products={products}/>
+                        <Contents products={products} catalog={catalog}/>
                     </div>
                 </div>
                 : <div className="overflow-x-hidden bg-white">
                     <div
                         className="w-full grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-2 py-2 px-2 m-auto place-items-center">
-                        <Contents products={products}/>
+                        <Contents products={products} catalog={catalog}/>
                     </div>
                 </div>
             }
@@ -48,22 +49,25 @@ export default function ItemList({
     </Spin>;
 };
 
-const Contents = ({ products }) => {
+const Contents = ({ products, catalog }) => {
     return Object.keys(products).map((key, i) => {
-        return <Link href={`/products/${products[key].id}-${products[key].name}`} key={key}
+        return <Link href={`/products/${catalog}/${products[key].id}-${products[key].name}`} key={key}
                      className={`rounded-lg relative ${width} h-full transition-all`}>
             <Badge.Ribbon text="Newest" className={i === 0 ? "" : "hidden"}>
                 <Card hoverable
                       cover={<Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
                                     preview={false}/>}
                       classNames={{
-                          body: "!p-0 !m-2 !h-24"
+                          body: "!p-0 !m-2 !h-[5.5rem]",
+                          cover: "border-2 border-gray-100 rounded-t-lg",
                       }}
                 >
                     <div className="h-full flex flex-col justify-between">
                         <Paragraph ellipsis={{ rows: 2 }}>{products[key].name}</Paragraph>
                         <Divider className="!m-0 !mt-auto !mb-1"/>
-                        <Tag color="blue" className="w-fit">${products[key].price}</Tag>
+                        <Tag color="blue" className="w-fit">
+                            <span className="text-[0.9rem]">${numberWithSeps(products[key].price)}</span>
+                        </Tag>
                     </div>
                 </Card>
             </Badge.Ribbon>

@@ -4,17 +4,23 @@ import { useUser } from "@/lib/firebase";
 import { useLayoutEffect, useState } from "react";
 import { Layout, Menu, Spin } from "antd";
 import { useRouter } from "next/navigation";
-import { ProductOutlined, UserOutlined } from "@ant-design/icons";
+import { FireOutlined, ProductOutlined, UserOutlined } from "@ant-design/icons";
 import ProductList from "@/app/user/admin/ProductList";
 import UserList from "@/app/user/admin/UserList";
+import Banners from "@/app/user/admin/Banners";
 
 export default function AdminPage() {
     const user = useUser();
     const router = useRouter();
-    const [currentAction, setCurrentAction] = useState("products");
+    const [currentAction, setCurrentAction] = useState("banners");
     const [display, setDisplay] = useState(false);
 
     const items = [
+        {
+            label: "Banners",
+            key: "banners",
+            icon: <FireOutlined/>,
+        },
         {
             label: "Products",
             key: "products",
@@ -54,6 +60,7 @@ export default function AdminPage() {
                         className="!bg-transparent max-w-[200px] min-w-[160px]"
                     />
                     <div className="m-3 w-full">
+                        {currentAction === "banners" && <Banners></Banners>}
                         {currentAction === "products" && <ProductList></ProductList>}
                         {currentAction === "users" && <UserList></UserList>}
                     </div>
