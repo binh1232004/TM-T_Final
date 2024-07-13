@@ -13,8 +13,8 @@ const { confirm } = Modal;
 
 const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
     return <List.Item>
-        <div className={`grid ${!small ? "grid-cols-7" : "grid-cols-2"} justify-between w-full`}>
-            <div className={`flex flex-row gap-2 ${!small ? "col-span-2" : ""}`}>
+        <div className={`grid ${!small ? "grid-cols-7" : "grid-cols-7"} justify-between w-full`}>
+            <div className={`flex flex-row gap-2 ${!small ? "col-span-2" : "col-span-6"}`}>
                 {!small ? <Checkbox className="my-auto" checked={cartItem.checked} onChange={(e) => {
                     onChecked?.({
                         ...cartItem,
@@ -30,11 +30,12 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                                }}/>
                     </div>
                     <div className="col-span-2 p-3 my-auto pr-4">
-                        <Paragraph ellipsis={{ rows: 2 }}>{cartItem.name}</Paragraph>
+                        <Paragraph className={`${small ? "!m-0" : ""}`}
+                                   ellipsis={{ rows: 2 }}>{cartItem.name}</Paragraph>
                     </div>
                 </div>
             </div>
-            <div className="my-auto">
+            <div className="my-auto text-right">
                 <p>${numberWithSeps(cartItem.price)}</p>
             </div>
             {!small ? <>
@@ -81,7 +82,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
     </List.Item>;
 };
 
-export default function Cart({ small = false }) {
+export default function Cart({ small = true }) {
     const { success, error, loading, contextHolder } = useMessage();
     const user = useUser();
     const router = useRouter();
@@ -107,6 +108,7 @@ export default function Cart({ small = false }) {
 
     useEffect(() => {
         if (!user || !loaded) return;
+        if (small) return;
         const destroy = loading("Updating cart...");
         setCheckOut(() => {
             if (cart.length === 0) return false;
@@ -180,9 +182,9 @@ export default function Cart({ small = false }) {
 
     return <Spin size="large" spinning={!loaded}>
         {contextHolder}
-        <Divider orientation="left" className="!my-0" orientationMargin="0">
+        {!small ? <Divider orientation="left" className="!my-0" orientationMargin="0">
             <Title level={3}>Your cart</Title>
-        </Divider>
+        </Divider> : null}
         <List
             size="small"
             bordered
