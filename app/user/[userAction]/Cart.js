@@ -5,7 +5,7 @@ import { getCart, setCart as setCartDb, setPendingOrder, useUser } from "@/lib/f
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
 import { DeleteOutlined, ExclamationCircleFilled, EyeOutlined } from "@ant-design/icons";
-import { numberWithSeps, useMessage } from "@/lib/utils";
+import { numberWithSeps } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 const { Title, Text, Paragraph } = Typography;
@@ -35,7 +35,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                     </div>
                 </div>
             </div>
-            <div className="my-auto text-right">
+            <div className={`my-auto ${small ? "text-right" : ""}`}>
                 <p>${numberWithSeps(cartItem.price)}</p>
             </div>
             {!small ? <>
@@ -82,8 +82,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
     </List.Item>;
 };
 
-export default function Cart({ small = false }) {
-    const { success, error, loading, contextHolder } = useMessage();
+export default function Cart({ c = null, small = false }) {
     const user = useUser();
     const router = useRouter();
     const [cart, setCart] = useState([]);
@@ -92,7 +91,7 @@ export default function Cart({ small = false }) {
 
     useEffect(() => {
         if (!user) return;
-        Promise.all(getCart(user).map(async (cartItem) => {
+        Promise.all((c || getCart(user)).map(async (cartItem) => {
             return getProduct(cartItem.id, cartItem.catalog).then((product) => {
                 return {
                     ...cartItem,
@@ -104,12 +103,10 @@ export default function Cart({ small = false }) {
             setCart(data);
             setLoaded(true);
         });
-    }, [user]);
+    }, [user, c]);
 
     useEffect(() => {
         if (!user || !loaded) return;
-        if (small) return;
-        const destroy = loading("Updating cart...");
         setCheckOut(() => {
             if (cart.length === 0) return false;
             for (let i = 0; i < cart.length; i++) {
@@ -124,20 +121,8 @@ export default function Cart({ small = false }) {
                 amount: item.amount,
                 variant: item.variant,
             };
-        })).then(result => {
-            if (result.status === "success") {
-                destroy();
-                success("Cart updated");
-            } else {
-                destroy();
-                error("Failed to update cart");
-            }
-        }).catch(() => {
-            error("Failed to update cart");
-            destroy();
-        });
-        return destroy;
-    }, [cart, user]);
+        })).then(r => r);
+    }, [cart, loaded, small, user]);
 
     const checkAll = (checked) => {
         setCart(cart.map((item) => {
@@ -181,7 +166,6 @@ export default function Cart({ small = false }) {
     };
 
     return <Spin size="large" spinning={!loaded}>
-        {contextHolder}
         {!small ? <Divider orientation="left" className="!my-0" orientationMargin="0">
             <Title level={3}>Your cart</Title>
         </Divider> : null}

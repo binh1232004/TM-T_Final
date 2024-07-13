@@ -37,10 +37,10 @@ export const LoginForm = ({ onClose = null, open = false }) => {
         } else {
             login(values.email, values.password).then(result => {
                 if (result.status === "success") {
-                    success("Login successful");
+                    success("Sign in successful");
                     closeModal();
                 } else {
-                    error("Login failed " + result.message);
+                    error("Sign in failed " + result.message);
                 }
             });
         }
@@ -62,7 +62,8 @@ export const LoginForm = ({ onClose = null, open = false }) => {
     return (
         <>
             {contextHolder}
-            <Modal title={register ? "Register" : "Login"} open={isModalOpen} onOk={closeModal} onCancel={closeModal} footer={null} destroyOnClose>
+            <Modal title={register ? "Register" : "Sign in"} open={isModalOpen} onOk={closeModal} onCancel={closeModal}
+                   footer={null} destroyOnClose>
                 <div className="p-2 bg-white m-auto top-0 left-0 rounded-lg">
                     {!register ?
                         <Form

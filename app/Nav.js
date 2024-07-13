@@ -13,7 +13,7 @@ import {
     ShoppingCartOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Menu, Popover, Spin, Input, List } from "antd";
+import { Badge, Button, Input, Menu, Popover, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -204,14 +204,14 @@ const Nav = () => {
                             content={
                                 user ? (
                                     <div className="flex flex-col gap-4">
-                                        <Cart small></Cart>
+                                        <Cart c={cart} small></Cart>
                                     </div>
                                 ) : null
                             }
                         >
                             <div className="translate-y-1">
                                 <Link
-                                    href="/user/cart"
+                                    href={"/user/cart"}
                                     className="!border-none !bg-transparent !text-white group"
                                 >
                                     <Badge

@@ -49,7 +49,6 @@ export default function UserPage() {
                 setDisplay(true);
             }
         }
-        console.log("user", user);
     }, [user, router]);
 
     useEffect(() => {
@@ -58,7 +57,7 @@ export default function UserPage() {
         } else {
             router.push("/user");
         }
-    }, [pathName]);
+    }, [pathName, router]);
 
 
     if (user && display) {
