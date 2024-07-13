@@ -171,7 +171,7 @@ const Nav = () => {
                             className="absolute left-10 top-12"
                         />
                     </div>
-                    <div className="h-full w-fit !flex gap-8 !justify-center !items-center">
+                    <div className="h-full w-96 !flex gap-8 !justify-evenly !items-center">
                         <Menu
                             theme="dark"
                             mode="horizontal"
