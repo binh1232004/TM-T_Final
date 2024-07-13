@@ -7,6 +7,7 @@ export default function ItemInputText({
     placeholderInputValue,
     inputValue = '',
     readOnly = false,
+    onChange = () => {},
 }) {
     const defaultStyle = 'border border-gray-300 rounded px-3 py-2 text-sm';
     const style = defaultStyle + ' ' + widthInputValue;
@@ -23,6 +24,7 @@ export default function ItemInputText({
                 placeholder={placeholderInputValue}
                 {...(inputValue !== '' ? { value: inputValue } : {})}
                 readOnly={readOnly}
+                onChange={onChange}
             />
         </div>
     );
