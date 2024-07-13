@@ -51,7 +51,9 @@ export default function ItemList({
 
 const Contents = ({ products, catalog }) => {
     return Object.keys(products).map((key, i) => {
-        return <Link href={`/products/${catalog}/${products[key].id}-${products[key].name}`} key={key}
+        return <Link
+            href={`/products/${catalog}/${products[key].id}-${products[key].name.replace(" ", "-").replace(/[^a-zA-Z0-9-_]/g, "")}`}
+            key={key}
                      className={`rounded-lg relative ${width} h-full transition-all`}>
             <Badge.Ribbon text="Newest" className={i === 0 ? "" : "hidden"}>
                 <Card hoverable
