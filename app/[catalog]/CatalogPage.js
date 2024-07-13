@@ -1,6 +1,7 @@
 "use client";
 
 import ItemList from "@/app/ItemList";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 const catalogMap = {
     shirts: "1",
@@ -9,7 +10,7 @@ const catalogMap = {
 };
 
 export default function CatalogPage({ catalog }) {
-    return <div>
-        <ItemList full catalog={catalogMap[catalog]} title={catalog} limit={50}></ItemList>
+    return <div className="m-8">
+        <ItemList full catalog={catalogMap[catalog]} title={capitalizeFirstLetter(catalog)} limit={50}></ItemList>
     </div>;
 }
