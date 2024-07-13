@@ -82,7 +82,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
     </List.Item>;
 };
 
-export default function Cart({ small = true }) {
+export default function Cart({ small = false }) {
     const { success, error, loading, contextHolder } = useMessage();
     const user = useUser();
     const router = useRouter();
