@@ -191,6 +191,7 @@ const Nav = () => {
                     </div>
                     <div className="flex justify-center items-center mx-3 my-5">
                         <Popover
+                            fresh
                             placement="bottomRight"
                             title={
                                 user ? (

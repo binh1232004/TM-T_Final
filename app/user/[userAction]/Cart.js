@@ -1,15 +1,14 @@
 "use client";
 
-import { Button, Checkbox, Divider, Image, InputNumber, List, Modal, Select, Spin, Typography } from "antd";
+import { Button, Checkbox, Divider, Image, InputNumber, List, Popconfirm, Select, Spin, Typography } from "antd";
 import { getCart, setCart as setCartDb, setPendingOrder, useUser } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
-import { DeleteOutlined, ExclamationCircleFilled, EyeOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EyeOutlined, WarningTwoTone } from "@ant-design/icons";
 import { numberWithSeps } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
 const { Title, Text, Paragraph } = Typography;
-const { confirm } = Modal;
 
 const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
     return <List.Item>
@@ -73,9 +72,14 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                 ${numberWithSeps(cartItem.price * cartItem.amount)}
             </div>
             <div className="flex flex-row justify-end gap-2 h-fit my-auto">
-                <Button size="small" type="primary" danger onClick={() => {
-                    onDelete?.(cartItem);
-                }}><DeleteOutlined/></Button>
+                <Popconfirm
+                    title="Do you want to remove this product?"
+                    okType={"danger"}
+                    onConfirm={() => onDelete?.(cartItem)}
+                    icon={<WarningTwoTone twoToneColor="red"/>}
+                >
+                    <Button size="small" type="primary" danger><DeleteOutlined/></Button>
+                </Popconfirm>
             </div>
             </> : null}
         </div>
@@ -152,17 +156,7 @@ export default function Cart({ c = null, small = false }) {
     };
 
     const onDelete = (item) => {
-        confirm({
-            title: "Do you want to delete this items?",
-            icon: <ExclamationCircleFilled/>,
-            okType: "danger",
-            maskClosable: true,
-            onOk() {
-                setCart(cart.filter((cartItem) => cartItem.id !== item.id));
-            },
-            onCancel() {
-            },
-        });
+        setCart(cart.filter((cartItem) => cartItem.id !== item.id));
     };
 
     return <Spin size="large" spinning={!loaded}>

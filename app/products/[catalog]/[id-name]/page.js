@@ -13,8 +13,6 @@ export async function generateMetadata({ params }) {
 
     const product = await getProduct(id, catalog);
 
-    console.log(product);
-
     if (product) {
         return {
             title: product.name,

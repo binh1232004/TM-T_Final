@@ -7,7 +7,6 @@ import { Button, Carousel, Image, InputNumber, Radio, Typography } from "antd";
 import { getCart, setCart, useUser } from "@/lib/firebase";
 import { useMessage } from "@/lib/utils";
 import { CreditCardOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import Head from "next/head";
 
 const { Title, Text } = Typography;
 
@@ -40,9 +39,6 @@ export default function Product({ params }) {
 
     return Object.keys(product).length ? (
         <div className="bg-white m-8 rounded-lg flex flex-row">
-            <Head>
-                <title>{product.name}</title>
-            </Head>
             {contextHolder}
             <div className="p-3 w-[38%]">
                 <Carousel autoplay arrows className="!overflow-hidden !rounded-lg">

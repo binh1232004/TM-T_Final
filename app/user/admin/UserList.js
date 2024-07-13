@@ -2,17 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { deleteUser, getUsers } from "@/lib/firebase";
-import { ExclamationCircleFilled } from "@ant-design/icons";
-import { List, Modal, Spin, Typography } from "antd";
+import { List, Spin, Typography } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
 import { useMessage } from "@/lib/utils";
 
-const { confirm } = Modal;
 const { Title } = Typography;
 
 export default function UserList() {
-    const { error, contextHolder } = useMessage();
+    const { error, success, contextHolder } = useMessage();
     const [users, setUsers] = useState({});
     const [currentUser, setCurrentUser] = useState({});
     const [reload, setReload] = useState(false);
@@ -31,21 +29,11 @@ export default function UserList() {
     }, [reload]);
 
     const onDelete = (user) => {
-        confirm({
-            title: "Do you want to delete this user?",
-            icon: <ExclamationCircleFilled/>,
-            content: "This action cannot be undone",
-            okType: "danger",
-            maskClosable: true,
-            onOk() {
-                return deleteUser(user.uid).then((result) => {
-                    if (result.status === "success") {
-                        setReload(!reload);
-                    }
-                });
-            },
-            onCancel() {
-            },
+        return deleteUser(user.uid).then((result) => {
+            if (result.status === "success") {
+                setReload(!reload);
+                success("User deleted");
+            }
         });
     };
 
