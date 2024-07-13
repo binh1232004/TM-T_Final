@@ -11,16 +11,16 @@ import { useRouter } from "next/navigation";
 const { Title, Text, Paragraph } = Typography;
 const { confirm } = Modal;
 
-const CartItem = ({ cartItem, onEdit, onDelete, onChecked }) => {
+const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
     return <List.Item>
-        <div className="grid grid-cols-7 justify-between w-full">
-            <div className="flex flex-row gap-2 col-span-2">
-                <Checkbox className="my-auto" checked={cartItem.checked} onChange={(e) => {
+        <div className={`grid ${!small ? "grid-cols-7" : "grid-cols-2"} justify-between w-full`}>
+            <div className={`flex flex-row gap-2 ${!small ? "col-span-2" : ""}`}>
+                {!small ? <Checkbox className="my-auto" checked={cartItem.checked} onChange={(e) => {
                     onChecked?.({
                         ...cartItem,
                         checked: e.target.checked,
                     });
-                }}/>
+                }}/> : null}
                 <div className="flex w-full">
                     <div className="h-fit w-fit my-auto shrink-0">
                         <Image src={cartItem.images[0]} className="aspect-square object-fit max-h-16 rounded-lg"
@@ -37,7 +37,8 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked }) => {
             <div className="my-auto">
                 <p>${numberWithSeps(cartItem.price)}</p>
             </div>
-            <div className="my-auto">
+            {!small ? <>
+                <div className="my-auto">
                 <Select
                     defaultValue={cartItem.variant}
                     onChange={(value) => {
@@ -75,11 +76,12 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked }) => {
                     onDelete?.(cartItem);
                 }}><DeleteOutlined/></Button>
             </div>
+            </> : null}
         </div>
     </List.Item>;
 };
 
-export default function Cart() {
+export default function Cart({ small = false }) {
     const { success, error, loading, contextHolder } = useMessage();
     const user = useUser();
     const router = useRouter();
@@ -184,7 +186,7 @@ export default function Cart() {
         <List
             size="small"
             bordered
-            header={<div className="flex flex-row gap-2 justify-between">
+            header={!small ? <div className="flex flex-row gap-2 justify-between">
                 <div className="grid grid-cols-7 w-full">
                     <Checkbox className="!my-auto !h-fit col-span-2" onChange={e => {
                         checkAll(e.target.checked);
@@ -215,10 +217,11 @@ export default function Cart() {
                         });
                     }}>Checkout</Button>
                 </div>
-            </div>}
+            </div> : null}
             dataSource={cart}
             renderItem={(item) => {
-                return <CartItem onChecked={onChecked} onEdit={onEdit} onDelete={onDelete} cartItem={item}></CartItem>;
+                return <CartItem onChecked={onChecked} onEdit={onEdit} onDelete={onDelete} cartItem={item}
+                                 small={small}></CartItem>;
             }}
         />
     </Spin>;
