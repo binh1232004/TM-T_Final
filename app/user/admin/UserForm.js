@@ -6,7 +6,7 @@ import { updateUserAdmin, updateUserInfo } from "@/lib/firebase";
 import { useMessage } from "@/lib/utils";
 import dayjs from "dayjs";
 
-const Form_ = ({ form, onFinish, closeModal, modal }) => {
+const Form_ = ({ form, onFinish, closeModal, modal = true }) => {
     return <Form
         form={form}
         layout="horizontal"

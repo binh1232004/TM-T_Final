@@ -30,6 +30,7 @@ export default function Page({ params }) {
     useEffect(() => {
         getProduct(id, catalog).then(result => {
             setProduct(result);
+            window.history.replaceState({}, "", `/products/${catalog}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
         });
     }, [catalog, id]);
 

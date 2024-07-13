@@ -63,7 +63,7 @@ export const LoginForm = ({ onClose = null, open = false }) => {
         <>
             {contextHolder}
             <Modal title={register ? "Register" : "Sign in"} open={isModalOpen} onOk={closeModal} onCancel={closeModal}
-                   footer={null} destroyOnClose>
+                   footer={null} destroyOnClose style={{ top: 50 }}>
                 <div className="p-2 bg-white m-auto top-0 left-0 rounded-lg">
                     {!register ?
                         <Form
@@ -185,7 +185,7 @@ export const LoginForm = ({ onClose = null, open = false }) => {
                                 <p>
                                     Or <button className="underline text-blue-500" onClick={() => {
                                         setRegister(false);
-                                    }}>login now!</button>
+                                }}>sign in now!</button>
                                 </p>
                             </Form.Item>
                         </Form>
