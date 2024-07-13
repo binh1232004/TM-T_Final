@@ -1,7 +1,13 @@
 "use client";
 
 import { LoginForm } from "@/app/LoginForm";
-import { getCart, logout, useUser } from "@/lib/firebase";
+import {
+    getCart,
+    logout,
+    useUser,
+    setCart as setCartDb,
+    setPendingOrder,
+} from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
@@ -12,11 +18,31 @@ import {
     SettingOutlined,
     ShoppingCartOutlined,
     UserOutlined,
+    DeleteOutlined,
+    ExclamationCircleFilled,
+    EyeOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Menu, Popover, Spin, Input } from "antd";
+import {
+    Badge,
+    Button,
+    Menu,
+    Popover,
+    Spin,
+    Input,
+    List,
+    Checkbox,
+    Typography,
+    Modal,
+    Select,
+    InputNumber,
+    Image,
+} from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { numberWithSeps, useMessage } from "@/lib/utils";
+import { getProduct } from "@/lib/firebase_server";
+import { useRouter } from "next/navigation";
 
 const Nav = () => {
     const pathName = usePathname();
@@ -24,7 +50,14 @@ const Nav = () => {
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
     const [cartCount, setCartCount] = useState(0);
+    const [cart, setCart] = useState([]);
+    const [checkOut, setCheckOut] = useState(false);
     const [loaded, setLoaded] = useState(false);
+    const { success, error, loading, contextHolder } = useMessage();
+    const router = useRouter();
+    const { Title, Text, Paragraph } = Typography;
+    const { confirm } = Modal;
+
     const [nav, setNav] = useState([
         {
             key: "/",
@@ -121,6 +154,209 @@ const Nav = () => {
         }
     }, [user, userMenu]);
 
+    const CartItem = ({ cartItem, onEdit, onDelete, onChecked }) => {
+        return (
+            <List.Item>
+                <div className="grid grid-cols-6 justify-between w-full">
+                    <div className="flex flex-row gap-2 col-span-2">
+                        <Checkbox
+                            className="my-auto"
+                            checked={cartItem.checked}
+                            onChange={(e) => {
+                                onChecked?.({
+                                    ...cartItem,
+                                    checked: e.target.checked,
+                                });
+                            }}
+                        />
+                        <div className="flex w-full">
+                            <div className="h-fit w-fit my-auto shrink-0">
+                                <Image
+                                    src={cartItem.images[0]}
+                                    className="aspect-square object-fit max-h-16 rounded-lg"
+                                    preview={{
+                                        mask: (
+                                            <EyeOutlined className="text-xl" />
+                                        ),
+                                        maskClassName: "rounded-lg",
+                                    }}
+                                />
+                            </div>
+                            <div className="col-span-2 p-3 my-auto pr-4">
+                                <Paragraph ellipsis={{ rows: 2 }}>
+                                    {cartItem.name}
+                                </Paragraph>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="my-auto">
+                        <p>${numberWithSeps(cartItem.price)}</p>
+                    </div>
+                    <div className="my-auto">
+                        <Select
+                            defaultValue={cartItem.variant}
+                            onChange={(value) => {
+                                onEdit?.({
+                                    ...cartItem,
+                                    variant: value,
+                                });
+                            }}
+                        >
+                            {["s", "m", "l", "xl"].map((i) => {
+                                return (
+                                    <Select.Option key={i} value={i}>
+                                        {i.toUpperCase()}
+                                    </Select.Option>
+                                );
+                            })}
+                        </Select>
+                    </div>
+                    <div className="my-auto">
+                        <div>
+                            <InputNumber
+                                min={1}
+                                max={cartItem.variants[cartItem.variant]}
+                                defaultValue={cartItem.amount}
+                                onChange={(value) => {
+                                    if (
+                                        value >
+                                        cartItem.variants[cartItem.variant]
+                                    ) {
+                                        return;
+                                    }
+                                    onEdit?.({
+                                        ...cartItem,
+                                        amount: value,
+                                    });
+                                }}
+                            />
+                            <p>
+                                <Text type="secondary">
+                                    Stock: {cartItem.variants[cartItem.variant]}
+                                </Text>
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex flex-row justify-end gap-2 h-fit my-auto">
+                        <Button
+                            size="small"
+                            type="primary"
+                            danger
+                            onClick={() => {
+                                onDelete?.(cartItem);
+                            }}
+                        >
+                            <DeleteOutlined />
+                        </Button>
+                    </div>
+                </div>
+            </List.Item>
+        );
+    };
+
+    useEffect(() => {
+        if (!user) return;
+        Promise.all(
+            getCart(user).map(async (cartItem) => {
+                return getProduct(cartItem.id, cartItem.catalog).then(
+                    (product) => {
+                        return {
+                            ...cartItem,
+                            ...product,
+                            checked: false,
+                        };
+                    }
+                );
+            })
+        ).then((data) => {
+            setCart(data);
+            setLoaded(true);
+        });
+    }, [user]);
+
+    useEffect(() => {
+        if (!user || !loaded) return;
+        const destroy = loading("Updating cart...");
+        setCheckOut(() => {
+            if (cart.length === 0) return false;
+            for (let i = 0; i < cart.length; i++) {
+                if (cart[i].checked) return true;
+            }
+            return false;
+        });
+        setCartDb(
+            user,
+            cart.map((item) => {
+                return {
+                    id: item.id,
+                    catalog: item.catalog,
+                    amount: item.amount,
+                    variant: item.variant,
+                };
+            })
+        )
+            .then((result) => {
+                if (result.status === "success") {
+                    destroy();
+                    success("Cart updated");
+                } else {
+                    destroy();
+                    error("Failed to update cart");
+                }
+            })
+            .catch(() => {
+                error("Failed to update cart");
+                destroy();
+            });
+        return destroy;
+    }, [cart, user]);
+
+    const checkAll = (checked) => {
+        setCart(
+            cart.map((item) => {
+                return {
+                    ...item,
+                    checked: checked,
+                };
+            })
+        );
+    };
+
+    const onChecked = (item) => {
+        setCart(
+            cart.map((cartItem) => {
+                if (cartItem.id === item.id) {
+                    return item;
+                }
+                return cartItem;
+            })
+        );
+    };
+
+    const onEdit = (item) => {
+        setCart(
+            cart.map((cartItem) => {
+                if (cartItem.id === item.id) {
+                    return item;
+                }
+                return cartItem;
+            })
+        );
+    };
+
+    const onDelete = (item) => {
+        confirm({
+            title: "Do you want to delete this items?",
+            icon: <ExclamationCircleFilled />,
+            okType: "danger",
+            maskClosable: true,
+            onOk() {
+                setCart(cart.filter((cartItem) => cartItem.id !== item.id));
+            },
+            onCancel() {},
+        });
+    };
+
     return (
         loaded && (
             <nav>
@@ -194,7 +430,93 @@ const Nav = () => {
                         />
                     </div>
                     <div className="flex justify-center items-center mx-3 my-5">
-                        <div className="translate-y-1">
+                        <Popover
+                            placement="bottom"
+                            title="My cart"
+                            content={
+                                <List
+                                    size="small"
+                                    bordered
+                                    header={
+                                        <div className="flex flex-row gap-2 justify-between">
+                                            <div className="grid grid-cols-6 w-full">
+                                                <Checkbox
+                                                    className="!my-auto !h-fit col-span-2"
+                                                    onChange={(e) => {
+                                                        checkAll(
+                                                            e.target.checked
+                                                        );
+                                                    }}
+                                                >
+                                                    Product
+                                                </Checkbox>
+                                                <div className="my-auto">
+                                                    <p>Price</p>
+                                                </div>
+                                                <div className="my-auto">
+                                                    <p>Size</p>
+                                                </div>
+                                                <div className="my-auto">
+                                                    <p>Amount</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                    footer={
+                                        <div className="flex flex-initial justify-center items-center">
+                                            <Button
+                                                disabled={!checkOut}
+                                                type="primary"
+                                                onClick={() => {
+                                                    setPendingOrder(
+                                                        user,
+                                                        cart
+                                                            .filter(
+                                                                (item) =>
+                                                                    item.checked
+                                                            )
+                                                            .map((item) => {
+                                                                return {
+                                                                    id: item.id,
+                                                                    catalog:
+                                                                        item.catalog,
+                                                                    amount: item.amount,
+                                                                    variant:
+                                                                        item.variant,
+                                                                };
+                                                            })
+                                                    ).then(() => {
+                                                        setCart(
+                                                            cart.filter(
+                                                                (item) =>
+                                                                    !item.checked
+                                                            )
+                                                        );
+                                                        router.push(
+                                                            "/user/payment"
+                                                        );
+                                                    });
+                                                }}
+                                            >
+                                                Checkout
+                                            </Button>
+                                        </div>
+                                    }
+                                    dataSource={cart}
+                                    renderItem={(item) => {
+                                        return (
+                                            <CartItem
+                                                onChecked={onChecked}
+                                                onEdit={onEdit}
+                                                onDelete={onDelete}
+                                                cartItem={item}
+                                            ></CartItem>
+                                        );
+                                    }}
+                                />
+                            }
+                            className="translate-y-1"
+                        >
                             <Link
                                 href="/user/cart"
                                 className="!border-none !bg-transparent !text-white group"
@@ -212,7 +534,7 @@ const Nav = () => {
                                     />
                                 </Badge>
                             </Link>
-                        </div>
+                        </Popover>
                         <Button className="!border-none !bg-transparent group">
                             <Badge
                                 size="small"
