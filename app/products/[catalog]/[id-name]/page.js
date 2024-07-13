@@ -75,7 +75,6 @@ export default function Page({ params }) {
                         <Button disabled={product.variants[option] === 0 || !(product.variants[option] >= amount)}
                                 size="large" ghost type="primary" onClick={() => {
                             const cart = getCart(user);
-                            console.log(cart, product);
                             if (cart.some(item => item.id === product.id)) {
                                 error("Item already in cart");
                                 return;

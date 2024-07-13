@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/app/LoginForm";
-import { getCart, logout, useUser } from "@/lib/firebase";
+import { logout, useCart, useUser } from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
@@ -13,7 +13,7 @@ import {
     ShoppingCartOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Menu, Popover, Spin, Input } from "antd";
+import { Badge, Button, Input, Menu, Popover, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,7 +23,7 @@ const Nav = () => {
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
-    const [cartCount, setCartCount] = useState(0);
+    const cart = useCart(user);
     const [loaded, setLoaded] = useState(false);
     const [nav, setNav] = useState([
         {
@@ -52,7 +52,7 @@ const Nav = () => {
             icon: <CreditCardOutlined />,
             label: (
                 <Link href={"/user/orders"}>
-                    <span>Oders</span>
+                    <span>Orders</span>
                 </Link>
             ),
         },
@@ -116,9 +116,6 @@ const Nav = () => {
                 ]);
             }
         }
-        if (user) {
-            setCartCount(getCart(user).length);
-        }
     }, [user, userMenu]);
 
     return (
@@ -153,7 +150,6 @@ const Nav = () => {
                                         if (item.key === "3") {
                                             logout().then(() => {
                                                 setOpen(false);
-                                                setCartCount(0);
                                             });
                                         } else {
                                             setOpen(false);
@@ -201,7 +197,7 @@ const Nav = () => {
                             >
                                 <Badge
                                     size="small"
-                                    count={cartCount}
+                                    count={cart.length}
                                     className="!text-white group-hover:!text-blue-500 !outline-none"
                                     classNames={{
                                         indicator: "!shadow-none",
