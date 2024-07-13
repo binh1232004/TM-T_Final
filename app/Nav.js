@@ -85,7 +85,7 @@ const Nav = () => {
             icon: <CreditCardOutlined />,
             label: (
                 <Link href={"/user/orders"}>
-                    <span>Orders</span>
+                    <span>Oders</span>
                 </Link>
             ),
         },
@@ -148,6 +148,9 @@ const Nav = () => {
                     ...userMenu,
                 ]);
             }
+        }
+        if (user) {
+            setCartCount(getCart(user).length);
         }
     }, [user, userMenu]);
 
@@ -386,6 +389,7 @@ const Nav = () => {
                                         if (item.key === "3") {
                                             logout().then(() => {
                                                 setOpen(false);
+                                                setCartCount(0);
                                             });
                                         } else {
                                             setOpen(false);
@@ -519,7 +523,7 @@ const Nav = () => {
                             >
                                 <Badge
                                     size="small"
-                                    count={cart.length}
+                                    count={cartCount}
                                     className="!text-white group-hover:!text-blue-500 !outline-none"
                                     classNames={{
                                         indicator: "!shadow-none",
