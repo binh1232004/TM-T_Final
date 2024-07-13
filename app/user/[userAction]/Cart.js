@@ -1,11 +1,12 @@
 "use client";
 
 import { Button, Checkbox, Divider, Image, InputNumber, List, Modal, Select, Spin, Typography } from "antd";
-import { getCart, setCart as setCartDb, useUser } from "@/lib/firebase";
+import { getCart, setCart as setCartDb, setPendingOrder, useUser } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
 import { DeleteOutlined, ExclamationCircleFilled, EyeOutlined } from "@ant-design/icons";
 import { numberWithSeps, useMessage } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const { Title, Text, Paragraph } = Typography;
 const { confirm } = Modal;
@@ -81,6 +82,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked }) => {
 export default function Cart() {
     const { success, error, loading, contextHolder } = useMessage();
     const user = useUser();
+    const router = useRouter();
     const [cart, setCart] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [checkOut, setCheckOut] = useState(false);
@@ -200,7 +202,17 @@ export default function Cart() {
                         <p>Total</p>
                     </div>
                     <Button disabled={!checkOut} type="primary" onClick={() => {
-                        console.log(cart.filter((item) => item.checked));
+                        setPendingOrder(user, cart.filter((item) => item.checked).map(item => {
+                            return {
+                                id: item.id,
+                                catalog: item.catalog,
+                                amount: item.amount,
+                                variant: item.variant,
+                            };
+                        })).then(() => {
+                            setCart(cart.filter((item) => !item.checked));
+                            router.push("/user/payment");
+                        });
                     }}>Checkout</Button>
                 </div>
             </div>}
