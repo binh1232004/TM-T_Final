@@ -51,12 +51,22 @@ export default function ItemList({
 
 const Contents = ({ products, catalog }) => {
     return Object.keys(products).map((key, i) => {
-        return <Link href={`/products/${catalog}/${products[key].id}-${products[key].name}`} key={key}
-                     className={`rounded-lg relative ${width} h-full transition-all`}>
+        console.log(products[key]);
+        const inStock = Object.keys(products[key].variants).some(k => products[key].variants[k] > 0);
+        return <Link
+            href={`/products/${catalog}/${products[key].id}-${products[key].name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`}
+            key={key}
+            className={`rounded-lg relative ${width} h-full transition-all`}>
             <Badge.Ribbon text="Newest" className={i === 0 ? "" : "hidden"}>
                 <Card hoverable
-                      cover={<Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
-                                    preview={false}/>}
+                      cover={<Spin spinning={!inStock} indicator={<>
+                          <div className="text-base w-full h-full flex flex-col justify-center">
+                              <p className="text-white w-fit h-fit m-auto aspect-square bg-[#00000070] rounded-full p-3 flex flex-col justify-center">Sold
+                                  out!</p>
+                          </div>
+                      </>} size="small">
+                          <Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
+                                 preview={false}/></Spin>}
                       classNames={{
                           body: "!p-0 !m-2 !h-[5.5rem]",
                           cover: "border-2 border-gray-100 rounded-t-lg",

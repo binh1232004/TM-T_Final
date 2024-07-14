@@ -1,7 +1,7 @@
 "use client";
 
-import { Button, List, Typography } from "antd";
-import { CrownTwoTone, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { Button, List, Popconfirm, Typography } from "antd";
+import { CrownTwoTone, DeleteOutlined, EditOutlined, WarningTwoTone } from "@ant-design/icons";
 
 const { Text } = Typography;
 
@@ -23,16 +23,20 @@ export default function UserListItem({ user, onEdit = null, onDelete = null }) {
                 {deleted ? <Button size="small" type="primary" danger onClick={() => {
                     // TODO: find a way to delete user data
                 }}>Delete data</Button> : null}
-                <Button size="small" disabled={deleted} type="default" onClick={() => {
-                    if (onEdit) {
-                        onEdit(user);
-                    }
-                }}><EditOutlined/></Button>
-                <Button size="small" type="primary" danger disabled={deleted} onClick={() => {
-                    if (onDelete) {
-                        onDelete(user);
-                    }
-                }}><DeleteOutlined/></Button>
+                {!deleted ? <>
+                    <Button size="small" disabled={deleted} type="default" onClick={() => {
+                        onEdit?.(user);
+                    }}><EditOutlined/></Button>
+                    <Popconfirm
+                        title="Do you want to delete this user?"
+                        description="This action cannot be undone"
+                        okType={"danger"}
+                        onConfirm={() => onDelete?.(user)}
+                        icon={<WarningTwoTone twoToneColor="red"/>}
+                    >
+                        <Button size="small" type="primary" danger disabled={deleted}><DeleteOutlined/></Button>
+                    </Popconfirm>
+                </> : null}
             </div>
         </div>
     </List.Item>;

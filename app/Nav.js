@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/app/LoginForm";
-import { getCart, logout, useUser } from "@/lib/firebase";
+import { logout, useCart, useUser } from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
@@ -13,17 +13,18 @@ import {
     ShoppingCartOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Menu, Popover, Spin, Input } from "antd";
+import { Badge, Button, Input, Menu, Popover, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import Cart from "./user/[userAction]/Cart";
 
 const Nav = () => {
     const pathName = usePathname();
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
-    const [cartCount, setCartCount] = useState(0);
+    const cart = useCart();
     const [loaded, setLoaded] = useState(false);
     const [nav, setNav] = useState([
         {
@@ -116,9 +117,6 @@ const Nav = () => {
                 ]);
             }
         }
-        if (user) {
-            setCartCount(getCart(user).length);
-        }
     }, [user, userMenu]);
 
     return (
@@ -153,7 +151,6 @@ const Nav = () => {
                                         if (item.key === "3") {
                                             logout().then(() => {
                                                 setOpen(false);
-                                                setCartCount(0);
                                             });
                                         } else {
                                             setOpen(false);
@@ -162,7 +159,6 @@ const Nav = () => {
                                     selectedKeys={[]}
                                 />
                             }
-                            // title="Title"
                             trigger="click"
                             open={open}
                             placement="bottomLeft"
@@ -194,25 +190,46 @@ const Nav = () => {
                         />
                     </div>
                     <div className="flex justify-center items-center mx-3 my-5">
-                        <div className="translate-y-1">
-                            <Link
-                                href="/user/cart"
-                                className="!border-none !bg-transparent !text-white group"
-                            >
-                                <Badge
-                                    size="small"
-                                    count={cartCount}
-                                    className="!text-white group-hover:!text-blue-500 !outline-none"
-                                    classNames={{
-                                        indicator: "!shadow-none",
-                                    }}
+                        <Popover
+                            fresh
+                            placement="bottomRight"
+                            title={
+                                user ? (
+                                    "New product added to cart"
+                                ) : (
+                                    <div className="text-center m-0">
+                                        Sign in to view cart
+                                    </div>
+                                )
+                            }
+                            content={
+                                user ? (
+                                    <div className="flex flex-col gap-4">
+                                        <Cart c={cart} small></Cart>
+                                    </div>
+                                ) : null
+                            }
+                        >
+                            <div className="translate-y-1">
+                                <Link
+                                    href={"/user/cart"}
+                                    className="!border-none !bg-transparent !text-white group"
                                 >
-                                    <ShoppingCartOutlined
-                                        style={{ fontSize: "25px" }}
-                                    />
-                                </Badge>
-                            </Link>
-                        </div>
+                                    <Badge
+                                        size="small"
+                                        count={cart.length}
+                                        className="!text-white group-hover:!text-blue-500 !outline-none"
+                                        classNames={{
+                                            indicator: "!shadow-none",
+                                        }}
+                                    >
+                                        <ShoppingCartOutlined
+                                            style={{ fontSize: "25px" }}
+                                        />
+                                    </Badge>
+                                </Link>
+                            </div>
+                        </Popover>
                         <Button className="!border-none !bg-transparent group">
                             <Badge
                                 size="small"

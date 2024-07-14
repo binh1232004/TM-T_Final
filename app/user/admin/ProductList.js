@@ -1,14 +1,13 @@
 "use client";
 
-import { Button, List, Menu, Modal, Spin, Typography } from "antd";
-import { ExclamationCircleFilled, PlusCircleOutlined, ProductOutlined } from "@ant-design/icons";
+import { Button, List, Menu, Spin, Typography } from "antd";
+import { PlusCircleOutlined, ProductOutlined } from "@ant-design/icons";
 import ProductListItem from "@/app/user/admin/ProductListItem";
 import { useEffect, useState } from "react";
 import { getCatalogs, getProducts } from "@/lib/firebase_server";
 import ProductForm from "@/app/user/admin/ProductForm";
 import { updateProduct } from "@/lib/firebase";
 
-const { confirm } = Modal;
 const { Title } = Typography;
 
 export default function ProductList() {
@@ -56,21 +55,9 @@ export default function ProductList() {
         setCurrentProduct(product);
     };
 
-
     const onDelete = (product) => {
-        confirm({
-            title: "Do you want to delete this items?",
-            icon: <ExclamationCircleFilled/>,
-            content: "This action cannot be undone",
-            okType: "danger",
-            maskClosable: true,
-            onOk() {
-                return updateProduct(currentProductCatalog, {}, product.id).then(() => {
-                    setReload(!reload);
-                });
-            },
-            onCancel() {
-            },
+        return updateProduct(currentProductCatalog, {}, product.id).then(() => {
+            setReload(!reload);
         });
     };
 
