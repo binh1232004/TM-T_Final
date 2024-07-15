@@ -14,6 +14,7 @@ import {
     UserOutlined,
 } from "@ant-design/icons";
 import { Badge, Button, Input, Menu, Popover, Spin } from "antd";
+import { blue } from "@ant-design/colors";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -128,20 +129,6 @@ const Nav = () => {
                         onClose={() => setLoginForm(false)}
                     />
                     <div className="">
-                        <Button
-                            className="!border-none !text-white !bg-transparent hover:!text-blue-500"
-                            icon={<UserOutlined style={{ fontSize: "20px" }} />}
-                            onClick={() => {
-                                if (user) setOpen(true);
-                                else setLoginForm(!loginForm);
-                            }}
-                        >
-                            {user !== undefined ? (
-                                user?.email || "Sign in"
-                            ) : (
-                                <Spin size="small" />
-                            )}
-                        </Button>
                         <Popover
                             content={
                                 <Menu
@@ -164,8 +151,28 @@ const Nav = () => {
                             placement="bottomLeft"
                             onOpenChange={handleOpenChange}
                             defaultSelectedKeys={[]}
-                            className="absolute left-10 top-12"
-                        />
+                        >
+                            <Button
+                                className="!border-none !text-white !bg-transparent hover:!text-blue-500"
+                                icon={
+                                    <UserOutlined
+                                        style={{ fontSize: "20px" }}
+                                    />
+                                }
+                                onClick={() => {
+                                    if (!user) {
+                                        setLoginForm(!loginForm);
+                                        setOpen(false);
+                                    }
+                                }}
+                            >
+                                {user !== undefined ? (
+                                    user?.email || "Sign in"
+                                ) : (
+                                    <Spin size="small" />
+                                )}
+                            </Button>
+                        </Popover>
                     </div>
                     <div className="h-full w-96 !flex gap-8 !justify-evenly !items-center">
                         <Menu
@@ -190,27 +197,28 @@ const Nav = () => {
                         />
                     </div>
                     <div className="flex justify-center items-center mx-3 my-5">
-                        <Popover
-                            fresh
-                            placement="bottomRight"
-                            title={
-                                user ? (
-                                    "New product added to cart"
-                                ) : (
-                                    <div className="text-center m-0">
-                                        Sign in to view cart
-                                    </div>
-                                )
-                            }
-                            content={
-                                user ? (
-                                    <div className="flex flex-col gap-4">
-                                        <Cart c={cart} small></Cart>
-                                    </div>
-                                ) : null
-                            }
-                        >
-                            <div className="translate-y-1">
+                        <div className="translate-y-1">
+                            <Popover
+                                fresh
+                                placement="bottomRight"
+                                arrow={{ pointAtCenter: true }}
+                                title={
+                                    user ? (
+                                        "New product added to cart"
+                                    ) : (
+                                        <div className="text-center m-0">
+                                            Sign in to view cart
+                                        </div>
+                                    )
+                                }
+                                content={
+                                    user ? (
+                                        <div className="flex flex-col gap-4">
+                                            <Cart c={cart} small></Cart>
+                                        </div>
+                                    ) : null
+                                }
+                            >
                                 <Link
                                     href={"/user/cart"}
                                     className="!border-none !bg-transparent !text-white group"
@@ -228,8 +236,8 @@ const Nav = () => {
                                         />
                                     </Badge>
                                 </Link>
-                            </div>
-                        </Popover>
+                            </Popover>
+                        </div>
                         <Button className="!border-none !bg-transparent group">
                             <Badge
                                 size="small"
