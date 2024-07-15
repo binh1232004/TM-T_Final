@@ -1,6 +1,6 @@
 "use server";
 
-import Product from "@/app/products/[catalog]/[id-name]/client";
+import Product from "@/app/[catalog]/[id-name]/client";
 import { getProduct } from "@/lib/firebase_server";
 import { notFound } from "next/navigation";
 
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
             openGraph: {
                 type: "website",
                 title: product.name,
-                url: `${public_url}/products/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
+                url: `${public_url}/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
                 description: product.description,
                 images: product.images.map(image => {
                     return {

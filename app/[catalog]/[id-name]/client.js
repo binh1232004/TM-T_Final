@@ -3,9 +3,9 @@
 
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
-import { Button, Carousel, Image, InputNumber, Radio, Typography } from "antd";
+import { Button, Carousel, Descriptions, Image, InputNumber, Radio, Typography } from "antd";
 import { getCart, setCart, useUser } from "@/lib/firebase";
-import { useMessage } from "@/lib/utils";
+import { numberWithSeps, useMessage } from "@/lib/utils";
 import { CreditCardOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
@@ -29,7 +29,7 @@ export default function Product({ params }) {
     useEffect(() => {
         getProduct(id, catalog).then(result => {
             setProduct(result);
-            window.history.replaceState({}, "", `/products/${catalog}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
+            window.history.replaceState({}, "", `/${catalog}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
         });
     }, [catalog, id]);
 
@@ -54,13 +54,14 @@ export default function Product({ params }) {
             </div>
             <div className="px-8 py-2 my-6 w-full">
                 <Title>{product.name}</Title>
-                <Text className="!text-lg !my-2">{product.description}</Text>
+                <Title level={3} className="!my-1">${numberWithSeps(product.price)}</Title>
                 <div className="flex flex-row gap-2 my-2">
                     <p className="h-fit my-auto">Size: </p>
                     <Radio.Group buttonStyle="solid" options={options} onChange={onChange} value={option}
                                  optionType="button"/>
-                    <p className="h-fit my-auto">Stock: {product.variants[option]}</p>
+
                 </div>
+                <p className="h-fit my-auto">{product.variants[option]} left</p>
                 <div className="flex flex-row gap-2">
                     <p className="h-fit my-auto">Amount: </p>
                     <InputNumber className="!my-3" min={1} max={product.variants[option]}
@@ -100,6 +101,9 @@ export default function Product({ params }) {
                     </div>
                 </div>
 
+                <Descriptions title="Product details" column={1} className="!my-3">
+                    <Text>{product.description}</Text>
+                </Descriptions>
             </div>
         </div>
     ) : null;
