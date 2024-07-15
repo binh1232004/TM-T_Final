@@ -44,7 +44,7 @@ export default function Product({ params }) {
                 <Carousel autoplay arrows className="!overflow-hidden !rounded-lg">
                     {product.images.map((image, i) => {
                         return <div key={i}>
-                            <Image className="rounded-lg" src={image} preview={{
+                            <Image alt={product.name} className="rounded-lg" src={image} preview={{
                                 mask: "",
                                 maskClassName: "rounded-lg !bg-transparent"
                             }}></Image>

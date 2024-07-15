@@ -10,7 +10,8 @@ export default function ProductListItem({ product, onEdit = null, onDelete = nul
         <div className="flex flex-row justify-between w-full">
             <div className="flex flex-row gap-2">
                 <div className="h-fit my-auto">
-                    <Image src={product.images[0]} className="aspect-square object-fit max-h-16 rounded-lg" preview={{
+                    <Image alt={product.name} src={product.images[0]}
+                           className="aspect-square object-fit max-h-16 rounded-lg" preview={{
                         mask: <EyeOutlined className="text-xl"/>,
                         maskClassName: "rounded-lg"
                     }}/>
