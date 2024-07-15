@@ -41,9 +41,7 @@ const Footer = () => {
                                 280 Đường An Dương vương, Phường 14, Quận 5, Hồ
                                 Chí Minh
                             </p>
-                            <p className="border-b-2 border-white w-fit">
-                                K48@Shop.hcmue.edu.vn
-                            </p>
+                            <p>K48@Shop.hcmue.edu.vn</p>
                             <p className="font-bold">099 123 456</p>
                         </div>
                     </div>
@@ -81,7 +79,9 @@ const Footer = () => {
                 </div>
             </div>
             <div className="text-white/50 py-5 border-t-2 border-white/30 mx-20">
-                <div className="text-center w-full mx-auto">Copyright. All rights reserved</div>
+                <div className="text-center w-full mx-auto">
+                    Copyright. All rights reserved
+                </div>
             </div>
         </div>
     );
