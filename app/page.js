@@ -27,7 +27,8 @@ export default function Home() {
             <Carousel autoplay adaptiveHeight className="min-h-6" arrows>
                 {banners.map((banner, i) => {
                     return <Link href={banner.link} key={i} className="!my-auto w-full !flex flex-row justify-center">
-                        <Image src={banner.image} className="w-full !mx-auto" preview={false}></Image>
+                        <Image alt="Banner image" src={banner.image} className="w-full !mx-auto"
+                               preview={false}></Image>
                     </Link>;
                 })}
             </Carousel>
