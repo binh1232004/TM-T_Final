@@ -1,11 +1,11 @@
 "use client";
 
 import { Button, List, Popconfirm, Typography } from "antd";
-import { CrownTwoTone, DeleteOutlined, EditOutlined, WarningTwoTone } from "@ant-design/icons";
+import { ContainerOutlined, CrownTwoTone, DeleteOutlined, EditOutlined, WarningTwoTone } from "@ant-design/icons";
 
 const { Text } = Typography;
 
-export default function UserListItem({ user, onEdit = null, onDelete = null }) {
+export default function UserListItem({ user, onEdit = null, onDelete = null, onOrders = null }) {
 
     const deleted = user.deleted || user?.will_delete;
 
@@ -24,6 +24,9 @@ export default function UserListItem({ user, onEdit = null, onDelete = null }) {
                     // TODO: find a way to delete user data
                 }}>Delete data</Button> : null}
                 {!deleted ? <>
+                    <Button size="small" disabled={deleted} type="default" onClick={() => {
+                        onOrders?.(user);
+                    }}><ContainerOutlined/></Button>
                     <Button size="small" disabled={deleted} type="default" onClick={() => {
                         onEdit?.(user);
                     }}><EditOutlined/></Button>

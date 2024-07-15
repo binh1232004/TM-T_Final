@@ -65,7 +65,8 @@ const Contents = ({ products, catalog }) => {
                                   out!</p>
                           </div>
                       </>} size="small">
-                          <Image src={products[key].images[0]} className="aspect-square object-fit rounded-lg"
+                          <Image alt={products[key].name} src={products[key].images[0]}
+                                 className="aspect-square object-fit rounded-lg"
                                  preview={false}/></Spin>}
                       classNames={{
                           body: "!p-0 !m-2 !h-[5.5rem]",

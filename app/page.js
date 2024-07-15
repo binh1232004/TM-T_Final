@@ -24,10 +24,11 @@ export default function Home() {
 
     return (
         <div>
-            <Carousel autoplay className="min-h-6" arrows>
+            <Carousel autoplay adaptiveHeight className="min-h-6" arrows>
                 {banners.map((banner, i) => {
                     return <Link href={banner.link} key={i} className="!my-auto w-full !flex flex-row justify-center">
-                        <Image src={banner.image} className="w-full !mx-auto" preview={false}></Image>
+                        <Image alt="Banner image" src={banner.image} className="w-full !mx-auto"
+                               preview={false}></Image>
                     </Link>;
                 })}
             </Carousel>

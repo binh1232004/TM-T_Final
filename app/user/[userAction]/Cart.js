@@ -22,7 +22,8 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                 }}/> : null}
                 <div className="flex w-full">
                     <div className="h-fit w-fit my-auto shrink-0">
-                        <Image src={cartItem.images[0]} className="aspect-square object-fit max-h-16 rounded-lg"
+                        <Image alt={cartItem?.name} src={cartItem.images[0]}
+                               className="aspect-square object-fit max-h-16 rounded-lg"
                                preview={{
                                    mask: <EyeOutlined className="text-xl"/>,
                                    maskClassName: "rounded-lg"
