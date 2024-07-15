@@ -56,6 +56,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                         <div className="h-fit w-fit my-auto shrink-0">
                             <Image
                                 src={cartItem.images[0]}
+                                alt={cartItem.name}
                                 className="aspect-square object-fit max-h-16 rounded-lg"
                                 preview={false}
                             />
