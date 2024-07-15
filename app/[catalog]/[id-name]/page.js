@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
             openGraph: {
                 type: "website",
                 title: product.name,
-                url: `${public_url}/products/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
+                url: `${public_url}/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
                 description: product.description,
                 images: product.images.map(image => {
                     return {
