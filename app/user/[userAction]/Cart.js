@@ -1,26 +1,10 @@
 "use client";
 
-import {
-    Button,
-    Checkbox,
-    Divider,
-    Image,
-    InputNumber,
-    List,
-    Popconfirm,
-    Select,
-    Spin,
-    Typography,
-} from "antd";
-import {
-    getCart,
-    setCart as setCartDb,
-    setPendingOrder,
-    useUser,
-} from "@/lib/firebase";
+import { Button, Checkbox, Divider, Image, InputNumber, List, Popconfirm, Select, Spin, Typography, } from "antd";
+import { getCart, setCart as setCartDb, setPendingOrder, useUser, } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
-import { DeleteOutlined, EyeOutlined, WarningTwoTone } from "@ant-design/icons";
+import { DeleteOutlined, WarningTwoTone } from "@ant-design/icons";
 import { numberWithSeps } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -63,7 +47,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                         </div>
                         <div className="col-span-2 p-3 my-auto pr-4">
                             <Link
-                                href={`/products/${cartItem.catalog}/${cartItem.id}`}
+                                href={`/${cartItem.catalog}/${cartItem.id}`}
                                 className={`${small ? "!m-0" : ""} text-black`}
                                 ellipsis={{ rows: 2 }}
                             >

@@ -1,6 +1,6 @@
 "use server";
 
-import Product from "@/app/products/[catalog]/[id-name]/client";
+import Product from "@/app/[catalog]/[id-name]/client";
 import { getProduct } from "@/lib/firebase_server";
 import { notFound } from "next/navigation";
 

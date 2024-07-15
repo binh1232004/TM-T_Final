@@ -54,7 +54,7 @@ const Contents = ({ products, catalog }) => {
         console.log(products[key]);
         const inStock = Object.keys(products[key].variants).some(k => products[key].variants[k] > 0);
         return <Link
-            href={`/products/${catalog}/${products[key].id}-${products[key].name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`}
+            href={`/${catalog}/${products[key].id}-${products[key].name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`}
             key={key}
             className={`rounded-lg relative ${width} h-full transition-all`}>
             <Badge.Ribbon text="Newest" className={i === 0 ? "" : "hidden"}>

@@ -14,11 +14,13 @@ export default function MainLayout({ children }) {
             }}
         >
             <Layout.Header>
-                <Nav />
+                <Nav/>
             </Layout.Header>
-            <Layout.Content>{children}</Layout.Content>
+            <Layout.Content style={{ minHeight: "90vh" }}>
+                                 {children}
+            </Layout.Content>
             <Layout.Footer className="!p-0">
-                <Footer />
+                <Footer/>
             </Layout.Footer>
         </Layout>
     );
