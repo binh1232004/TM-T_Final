@@ -2,8 +2,20 @@
 
 import Product from "@/app/products/[catalog]/[id-name]/client";
 import { getProduct } from "@/lib/firebase_server";
+import { notFound } from "next/navigation";
+
+// TODO: cache product
 
 export default async function Page({ params, query }) {
+    const [id] = params["id-name"].split("-", 2);
+    const catalog = params["catalog"];
+
+    const product = await getProduct(id, catalog);
+
+    if (!product) {
+        notFound();
+    }
+
     return <Product params={params} query={query}/>;
 }
 
