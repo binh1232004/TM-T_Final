@@ -4,7 +4,7 @@ import { useUser } from "@/lib/firebase";
 import { useLayoutEffect, useState } from "react";
 import { Layout, Menu, Spin } from "antd";
 import { useRouter } from "next/navigation";
-import { FireOutlined, ProductOutlined, UserOutlined } from "@ant-design/icons";
+import { ContainerOutlined, FireOutlined, ProductOutlined, UserOutlined } from "@ant-design/icons";
 import ProductList from "@/app/user/admin/ProductList";
 import UserList from "@/app/user/admin/UserList";
 import Banners from "@/app/user/admin/Banners";
@@ -30,6 +30,11 @@ export default function AdminPage() {
             label: "Users",
             key: "users",
             icon: <UserOutlined/>,
+        },
+        {
+            label: "Orders",
+            key: "orders",
+            icon: <ContainerOutlined/>,
         },
     ];
 
