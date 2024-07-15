@@ -23,6 +23,8 @@ export async function generateMetadata({ params }) {
     const [id] = params["id-name"].split("-", 2);
     const catalog = params["catalog"];
 
+    const public_url = process.env.VERCEL_URL || "";
+
     const product = await getProduct(id, catalog);
 
     if (product) {
@@ -32,6 +34,7 @@ export async function generateMetadata({ params }) {
             openGraph: {
                 type: "website",
                 title: product.name,
+                url: `${public_url}/products/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
                 description: product.description,
                 images: product.images.map(image => {
                     return {
