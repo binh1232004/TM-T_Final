@@ -29,7 +29,7 @@ export default function Product({ params }) {
     useEffect(() => {
         getProduct(id, catalog).then(result => {
             setProduct(result);
-            window.history.replaceState({}, "", `/${catalog}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
+            window.history.replaceState(window.history.state, "", `/${catalog}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
         });
     }, [catalog, id]);
 
@@ -61,11 +61,11 @@ export default function Product({ params }) {
                                  optionType="button"/>
 
                 </div>
-                <p className="h-fit my-auto">{product.variants[option]} left</p>
                 <div className="flex flex-row gap-2">
                     <p className="h-fit my-auto">Amount: </p>
                     <InputNumber className="!my-3" min={1} max={product.variants[option]}
                                  defaultValue={amount} onChange={setAmount}></InputNumber>
+                    <p className="h-fit my-auto">{product.variants[option]} left</p>
                 </div>
                 <div className="grid grid-cols-3">
                     <div className="grid grid-cols-2 gap-3 my-3 w-full col-span-2">

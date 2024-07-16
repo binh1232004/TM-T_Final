@@ -51,7 +51,6 @@ export default function ItemList({
 
 const Contents = ({ products, catalog }) => {
     return Object.keys(products).map((key, i) => {
-        console.log(products[key]);
         const inStock = Object.keys(products[key].variants).some(k => products[key].variants[k] > 0);
         return <Link
             href={`/${catalog}/${products[key].id}-${products[key].name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`}

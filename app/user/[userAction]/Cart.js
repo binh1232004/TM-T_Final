@@ -3,7 +3,7 @@
 import { Button, Checkbox, Divider, Image, InputNumber, List, Popconfirm, Select, Spin, Typography, } from "antd";
 import { getCart, setCart as setCartDb, setPendingOrder, useUser, } from "@/lib/firebase";
 import { useEffect, useState } from "react";
-import { getProduct } from "@/lib/firebase_server";
+import { getCatalogs, getProduct } from "@/lib/firebase_server";
 import { DeleteOutlined, WarningTwoTone } from "@ant-design/icons";
 import { numberWithSeps } from "@/lib/utils";
 import { useRouter } from "next/navigation";
@@ -11,7 +11,7 @@ import Link from "next/link";
 
 const { Title, Text, Paragraph } = Typography;
 
-const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
+const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small, catalogMap = null }) => {
     return (
         <List.Item>
             <div
@@ -47,7 +47,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                         </div>
                         <div className="col-span-2 p-3 my-auto pr-4">
                             <Link
-                                href={`/${cartItem.catalog}/${cartItem.id}`}
+                                href={`/${catalogMap?.[cartItem.catalog]?.name?.toLowerCase() || cartItem.catalog}/${cartItem.id}`}
                                 className={`${small ? "!m-0" : ""} text-black`}
                                 ellipsis={{ rows: 2 }}
                             >
@@ -115,10 +115,10 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small }) => {
                                 title="Do you want to remove this product?"
                                 okType={"danger"}
                                 onConfirm={() => onDelete?.(cartItem)}
-                                icon={<WarningTwoTone twoToneColor="red" />}
+                                icon={<WarningTwoTone twoToneColor="red"/>}
                             >
                                 <Button size="small" type="primary" danger>
-                                    <DeleteOutlined />
+                                    <DeleteOutlined/>
                                 </Button>
                             </Popconfirm>
                         </div>
@@ -135,11 +135,13 @@ export default function Cart({ c = null, small = false }) {
     const [cart, setCart] = useState([]);
     const [loaded, setLoaded] = useState(false);
     const [checkOut, setCheckOut] = useState(false);
+    const [catalogMap, setCatalogMap] = useState({});
 
     useEffect(() => {
         if (!user) return;
-        Promise.all(
-            (c || getCart(user)).map(async (cartItem) => {
+        getCatalogs().then((data) => {
+            setCatalogMap(data);
+            Promise.all((c || getCart(user)).map(async (cartItem) => {
                 return getProduct(cartItem.id, cartItem.catalog).then(
                     (product) => {
                         return {
@@ -149,11 +151,12 @@ export default function Cart({ c = null, small = false }) {
                         };
                     }
                 );
-            })
-        ).then((data) => {
-            setCart(data);
-            setLoaded(true);
+            })).then((data) => {
+                setCart(data);
+                setLoaded(true);
+            });
         });
+
     }, [user, c]);
 
     useEffect(() => {
@@ -176,7 +179,7 @@ export default function Cart({ c = null, small = false }) {
                 };
             })
         ).then((r) => r);
-    }, [cart, loaded, small, user]);
+    }, [cart, loaded, user]);
 
     const checkAll = (checked) => {
         setCart(
@@ -294,6 +297,7 @@ export default function Cart({ c = null, small = false }) {
                             onDelete={onDelete}
                             cartItem={item}
                             small={small}
+                            catalogMap={catalogMap}
                         ></CartItem>
                     );
                 }}
