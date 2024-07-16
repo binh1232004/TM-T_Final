@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
 import { Button, Carousel, Descriptions, Image, InputNumber, Radio, Typography } from "antd";
-import { getCart, setCart, useUser } from "@/lib/firebase";
+import { getPendingOrder, setCart, useCart, useUser } from "@/lib/firebase";
 import { numberWithSeps, useMessage } from "@/lib/utils";
 import { CreditCardOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import ItemList from "@/app/ItemList";
@@ -22,6 +22,7 @@ export default function Product({ params }) {
     const { error, success, contextHolder } = useMessage();
     const catalog = params["catalog"];
     const user = useUser();
+    const cart = useCart();
     const [id] = params["id-name"].split("-", 2);
     const [product, setProduct] = useState({});
     const [option, setOption] = useState("s");
@@ -72,12 +73,17 @@ export default function Product({ params }) {
                     <div className="grid grid-cols-3">
                         <div className="grid grid-cols-2 gap-3 my-3 w-full col-span-2">
                             <Button disabled={product.variants[option] === 0 || !(product.variants[option] >= amount)}
-                                    size="large" type="primary">
+                                    size="large" type="primary"
+                                    onClick={() => {
+                                        if (getPendingOrder(user)) {
+                                            error("You have a pending order. Please complete the payment first.");
+                                        }
+                                    }}
+                            >
                                 <CreditCardOutlined/> Buy now
                             </Button>
                             <Button disabled={product.variants[option] === 0 || !(product.variants[option] >= amount)}
                                     size="large" ghost type="primary" onClick={() => {
-                                const cart = getCart(user);
                                 if (cart.some(item => item.id === product.id)) {
                                     error("Item already in cart");
                                     return;
