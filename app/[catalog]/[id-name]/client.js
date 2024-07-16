@@ -60,9 +60,9 @@ export default function Product({ params }) {
                     <Title level={3} className="!my-1">${numberWithSeps(product.price)}</Title>
                     <div className="flex flex-row gap-2 my-2">
                         <p className="h-fit my-auto">Size: </p>
-                        <Radio.Group buttonStyle="solid" options={options} onChange={onChange} value={option}
-                                     optionType="button"/>
-
+                        <Radio.Group buttonStyle="solid" options={options.map(({ label, value }) => {
+                            return ({ label, value, disabled: product.variants[value] === 0 });
+                        })} onChange={onChange} value={option} optionType="button"/>
                     </div>
                     <div className="flex flex-row gap-2">
                         <p className="h-fit my-auto">Amount: </p>
