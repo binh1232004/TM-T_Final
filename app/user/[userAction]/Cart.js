@@ -1,15 +1,15 @@
 "use client";
 
 import { Button, Checkbox, Divider, Image, InputNumber, List, Popconfirm, Select, Spin, Typography, } from "antd";
-import { getCart, setCart as setCartDb, setPendingOrder, useUser, } from "@/lib/firebase";
+import { getCart, getPendingOrder, setCart as setCartDb, setPendingOrder, useUser, } from "@/lib/firebase";
 import { useEffect, useState } from "react";
 import { getCatalogs, getProduct } from "@/lib/firebase_server";
 import { DeleteOutlined, WarningTwoTone } from "@ant-design/icons";
-import { numberWithSeps } from "@/lib/utils";
+import { numberWithSeps, useMessage } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text } = Typography;
 
 const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small, catalogMap = null }) => {
     return (
@@ -130,6 +130,7 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small, catalogMap = n
 };
 
 export default function Cart({ c = null, small = false }) {
+    const { error, contextHolder } = useMessage();
     const user = useUser();
     const router = useRouter();
     const [cart, setCart] = useState([]);
@@ -220,6 +221,7 @@ export default function Cart({ c = null, small = false }) {
 
     return (
         <Spin size="large" spinning={!loaded}>
+            {contextHolder}
             {!small ? (
                 <Divider
                     orientation="left"
@@ -260,26 +262,30 @@ export default function Cart({ c = null, small = false }) {
                                     disabled={!checkOut}
                                     type="primary"
                                     onClick={() => {
-                                        setPendingOrder(
-                                            user,
-                                            cart
-                                                .filter((item) => item.checked)
-                                                .map((item) => {
-                                                    return {
-                                                        id: item.id,
-                                                        catalog: item.catalog,
-                                                        amount: item.amount,
-                                                        variant: item.variant,
-                                                    };
-                                                })
-                                        ).then(() => {
-                                            setCart(
-                                                cart.filter(
-                                                    (item) => !item.checked
-                                                )
-                                            );
-                                            router.push("/user/payment");
-                                        });
+                                        if (getPendingOrder(user).length !== 0) {
+                                            error("You have a pending order. Please complete the payment first.");
+                                        } else {
+                                            setPendingOrder(
+                                                user,
+                                                cart
+                                                    .filter((item) => item.checked)
+                                                    .map((item) => {
+                                                        return {
+                                                            id: item.id,
+                                                            catalog: item.catalog,
+                                                            amount: item.amount,
+                                                            variant: item.variant,
+                                                        };
+                                                    })
+                                            ).then(() => {
+                                                setCart(
+                                                    cart.filter(
+                                                        (item) => !item.checked
+                                                    )
+                                                );
+                                                router.push("/user/payment");
+                                            });
+                                        }
                                     }}
                                 >
                                     Checkout
