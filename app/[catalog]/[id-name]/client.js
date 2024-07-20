@@ -3,10 +3,18 @@
 
 import { useEffect, useState } from "react";
 import { getProduct } from "@/lib/firebase_server";
-import { Button, Carousel, Descriptions, Image, InputNumber, Radio, Typography } from "antd";
+import { Button, Carousel, Descriptions, Image, InputNumber, Radio, Tooltip, Typography } from "antd";
 import { getPendingOrder, setCart, useCart, useUser } from "@/lib/firebase";
 import { numberWithSeps, useMessage } from "@/lib/utils";
-import { CreditCardOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import {
+    CreditCardOutlined,
+    FacebookOutlined,
+    LinkOutlined,
+    PinterestOutlined,
+    RedditOutlined,
+    ShoppingCartOutlined,
+    XOutlined
+} from "@ant-design/icons";
 import ItemList from "@/app/ItemList";
 
 const { Title, Text } = Typography;
@@ -70,7 +78,7 @@ export default function Product({ params }) {
                                      defaultValue={amount} onChange={setAmount}></InputNumber>
                         <p className="h-fit my-auto">{product.variants[option]} left</p>
                     </div>
-                    <div className="grid grid-cols-3">
+                    <div className="grid grid-cols-3 gap-3">
                         <div className="grid grid-cols-2 gap-3 my-3 w-full col-span-2">
                             <Button disabled={product.variants[option] === 0 || !(product.variants[option] >= amount)}
                                     size="large" type="primary"
@@ -106,6 +114,46 @@ export default function Product({ params }) {
                             }}>
                                 <ShoppingCartOutlined/> Add to cart
                             </Button>
+                        </div>
+                        <div className="flex flex-col justify-center">
+                            <div className="flex flex-row gap-1">
+                                <div className="flex flex-col justify-center">
+                                    Share:
+                                </div>
+                                <Tooltip title="Copy link">
+                                    <Button type="text" icon={<LinkOutlined style={{ fontSize: "1.4rem" }}/>}
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(window.location.href).then(() => {
+                                                    success("Link copied");
+                                                });
+                                            }}></Button>
+                                </Tooltip>
+                                <Tooltip title="Share on Facebook">
+                                    <Button type="text" icon={<FacebookOutlined style={{ fontSize: "1.4rem" }}/>}
+                                            onClick={() => {
+                                                window.open(`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}&t=${product.name}`, "popup", "width=600,height=600");
+                                            }}></Button>
+                                </Tooltip>
+                                <Tooltip title="Share on X">
+                                    <Button type="text" icon={<XOutlined style={{ fontSize: "1.4rem" }}/>}
+                                            onClick={() => {
+                                                window.open(`https://twitter.com/intent/tweet?url=${window.location.href}`, "popup", "width=600,height=600");
+                                            }}></Button>
+                                </Tooltip>
+                                <Tooltip title="Share on Pinterest">
+                                    <Button type="text" icon={<PinterestOutlined style={{ fontSize: "1.4rem" }}/>}
+                                            onClick={() => {
+                                                window.open(`https://pinterest.com/pin/create/button/?url=${window.location.href}&media=${product.images[0]}&description=${product.name}`, "popup", "width=600,height=600");
+                                            }}></Button>
+                                </Tooltip>
+                                <Tooltip title="Share on Reddit">
+                                    <Button type="text" icon={<RedditOutlined style={{ fontSize: "1.4rem" }}/>}
+                                            onClick={() => {
+                                                window.open(`https://reddit.com/submit?url=${window.location.href}&title=${product.name}`, "popup", "width=600,height=600");
+                                            }}></Button>
+                                </Tooltip>
+                            </div>
+
                         </div>
                     </div>
 
