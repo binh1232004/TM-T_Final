@@ -16,7 +16,8 @@ export default function ItemList({
     sort = -1,
     title = "Products",
     full = false,
-    extra = ""
+    extra = "",
+    ribbon = true,
 }) {
     const [products, setProducts] = useState({});
 
@@ -35,13 +36,13 @@ export default function ItemList({
                 <div className="w-full overflow-x-scroll bg-white">
                     <div
                         className="flex flex-row gap-2 py-2 px-6 m-auto place-items-center w-fit">
-                        <Contents products={products} catalog={catalog}/>
+                        <Contents products={products} catalog={catalog} ribbon={ribbon}/>
                     </div>
                 </div>
                 : <div className="overflow-x-hidden bg-white">
                     <div
                         className="w-full grid grid-cols-[repeat(auto-fill,minmax(10rem,1fr))] gap-2 py-2 px-2 m-auto place-items-center">
-                        <Contents products={products} catalog={catalog}/>
+                        <Contents products={products} catalog={catalog} ribbon={ribbon}/>
                     </div>
                 </div>
             }
@@ -49,15 +50,14 @@ export default function ItemList({
     </Spin>;
 };
 
-const Contents = ({ products, catalog }) => {
+const Contents = ({ products, catalog, ribbon = true }) => {
     return Object.keys(products).map((key, i) => {
-        console.log(products[key]);
         const inStock = Object.keys(products[key].variants).some(k => products[key].variants[k] > 0);
         return <Link
             href={`/${catalog}/${products[key].id}-${products[key].name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`}
             key={key}
             className={`rounded-lg relative ${width} h-full transition-all`}>
-            <Badge.Ribbon text="Newest" className={i === 0 ? "" : "hidden"}>
+            <Badge.Ribbon text="Newest" className={i !== 0 || !ribbon ? "hidden" : ""}>
                 <Card hoverable
                       cover={<Spin spinning={!inStock} indicator={<>
                           <div className="text-base w-full h-full flex flex-col justify-center">
