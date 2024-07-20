@@ -5,133 +5,158 @@ import ItemInputText from './components/paymentPage/itemInputText.js';
 import useDeliveryAddress from './hooks/paymentPage/useDeliveryAddress.js';
 import ItemPaymentOption from './components/paymentPage/itemPaymentOption';
 import ItemCart from './components/paymentPage/itemCart';
-import { useUser, getCart } from '@/lib/firebase';
+import { useUser, getPendingOrder, setOrder } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 import { getProduct } from '@/lib/firebase_server';
 import { Spin } from 'antd';
-import { setOrders } from '@/lib/firebase';
-import Cart from './components/paymentPage/cart.js';
+import { notification } from 'antd';
+import PayPal from './components/paymentPage/paypal';
 export default function PaymetPage() {
+    const [api, contextHolder] = notification.useNotification();
+    const openNotification = () => {
+        api['success']({
+            message: 'Thank you for your order!',
+            description: 'You have successfully placed an order',
+            duration: 2,
+        });
+    };
     const [typedAddress, setTypedAddress] = useState('');
     const [typedNote, setTypedNote] = useState('');
     //selectedDeliveryOption: have values base on codeDelivery in ItemPaymentOption
     // {COD: THANH TOÁN KHI NHẬN HÀNG, PAYPAL: THANH TOÁN BẰNG PAYPAL}
     const [selectedDeliveryOption, setSelectedDeliveryOption] = useState('COD');
     const [isHover, setIsHover] = useState(false);
-    const user = useUser();
     const [total, setTotal] = useState(0);
     const router = useRouter();
     const redirectToHome = () => {
         router.push('/');
     };
+    // Chuyển đổi hàm này thành async để có thể sử dụng await bên trong
+    const [cart, setCart] = useState([]);
+    const user = useUser();
+    const [loading, setLoading] = useState(true);
     const convertPriceIntoDollar = (price) => {
         return '$' + new Intl.NumberFormat('en-US').format(price);
-    }
-    // Chuyển đổi hàm này thành async để có thể sử dụng await bên trong
-    // const [cart, setCart] = useState([]);
-    // const user = useUser();
-    // const [loading, setLoading] = useState(true);
-    // const getImgURLProduct = async (id, catalog) => {
-    //     if (getCart(user).length !== 0) {
-    //         const snapshot = await getProduct(id, catalog);
-    //         return snapshot.images[0];
-    //     }
-    // }
-    // const getNameProduct = async (id, catalog) => {
-    //     if (getCart(user).length !== 0) {
-    //         const snapshot = await getProduct(id, catalog);
-    //         return snapshot.name;
-    //     }
-    // }
-    // const getPriceProduct = async (id, catalog) => {
-    //     if (getCart(user).length !== 0) {
-    //         const snapshot = await getProduct(id, catalog);
-    //         return snapshot.price;
-    //     }
-    // }
-    // const convertPriceIntoDollar = (price) => {
-    //     return '$' + new Intl.NumberFormat('en-US').format(price);
-    // }
+    };
 
-    // const styleItemCart = loading ?  "w-full sm:w-1/2 flex justify-center items-center" : "w-full sm:w-1/2 flex flex-col";
+    const styleItemCart = loading
+        ? 'w-full sm:w-1/2 flex justify-center items-center'
+        : 'w-full sm:w-1/2 flex flex-col';
     // Sử dụng useEffect
+    const getImgURLProduct = async (id, catalog) => {
+        if (getPendingOrder(user).length !== 0) {
+            const snapshot = await getProduct(id, catalog);
+            return snapshot.images[0];
+        }
+    };
+    const getNameProduct = async (id, catalog) => {
+        if (getPendingOrder(user).length !== 0) {
+            const snapshot = await getProduct(id, catalog);
+            return snapshot.name;
+        }
+    };
+    const getPriceProduct = async (id, catalog) => {
+        if (getPendingOrder(user).length !== 0) {
+            const snapshot = await getProduct(id, catalog);
+            return snapshot.price;
+        }
+    };
     useEffect(() => {
         if (user === null) {
             redirectToHome();
         } else {
-            // if (getCart(user).length !== 0) {
-            //     let iTotal = 0;
-            //     const updateCartWithImages = async () => {
-            //         try {
-            //             const arrCart = getCart(user);
-            //             // Sử dụng vòng lặp for...of để xử lý bất đồng bộ
-            //             for (const element of arrCart) {
-            //                 const imgURL = await getImgURLProduct(element['id'], element['catalog']);
-            //                 element.imgURL = imgURL;
-            //                 const name = await getNameProduct(element['id'], element['catalog']);
-            //                 element.title = name;
-            //                 const price = await getPriceProduct(element['id'], element['catalog']);
-            //                 element.price = price;
-            //                 iTotal += price * element.amount;
-            //             }
-            //             console.log(arrCart);
-            //             setTotal(iTotal);
-            //             setCart(arrCart);
-            //         }
-            //         catch (error) {
-            //             console.error(error);
-            //         } finally {
-            //             setLoading(false);
-            //         }
-            //     };
+            if (getPendingOrder(user).length !== 0) {
+                let iTotal = 0;
+                const updateCartWithImages = async () => {
+                    try {
+                        const arrCart = getPendingOrder(user);
+                        // Sử dụng vòng lặp for...of để xử lý bất đồng bộ
+                        for (const element of arrCart) {
+                            const imgURL = await getImgURLProduct(
+                                element['id'],
+                                element['catalog'],
+                            );
+                            element.imgURL = imgURL;
+                            const name = await getNameProduct(
+                                element['id'],
+                                element['catalog'],
+                            );
+                            element.title = name;
+                            const price = await getPriceProduct(
+                                element['id'],
+                                element['catalog'],
+                            );
+                            element.price = price;
+                            iTotal += price * element.amount;
+                        }
+                        console.log(arrCart);
+                        setTotal(iTotal);
+                        setCart(arrCart);
+                    } catch (error) {
+                        console.error(error);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
 
-            //     updateCartWithImages();
-            // }
+                updateCartWithImages();
+            }
         }
     }, [user]);
     const handleSubmit = (event) => {
         event.preventDefault();
         // console.log(typedAddress, typedNote, selectedDeliveryOption, transformIdToNameDistrict(selectedDistrictId), transformIdToNameProvince(selectedProvinceId), transformIdToNameWard(selectedWardId));
+        console.log(
+            cart,
+            total,
+            typedAddress,
+            typedNote,
+            selectedDeliveryOption,
+        );
+        setOrder(user, {
+            address: typedAddress,
+            note: typedNote,
+            products: cart,
+            total: total,
+            delivery_option: selectedDeliveryOption,
+            status: false,
+        });
+        openNotification();
     };
-    // const {
-    //     provinces,
-    //     districts,
-    //     wards,
-    //     selectedProvinceId,
-    //     selectedDistrictId,
-    //     selectedWardId,
-    //     handleProvinceChange,
-    //     handleDistrictChange,
-    //     handleWardChange,
-    //     transformIdToNameProvince,
-    //     transformIdToNameDistrict,
-    //     transformIdToNameWard,
-    // } = useDeliveryAddress();
 
     const styleSelect =
         'w-full bg-white border border-gray-300 text-sm rounded px-3 py-2 my-2';
     const handleTypedAddress = (e) => {
         setTypedAddress(e.target.value);
-    }
+    };
     const handleTypedNote = (e) => {
         setTypedNote(e.target.value);
-    }
+    };
     return (
-        <div style={{ height: '100vh' }} >
-
+        <div>
             <div className="flex flex-col w-full sm:flex-row space-y-5 sm:space-x-10 px-5">
-                {/* <div className={styleItemCart}>
-                    {loading ?
-                        (
-                            <Spin size="large" />
-                        )
-                        : (
-                            cart.map((item, index) => (
-                                <ItemCart key={index} title={item.title} price={item.price} quantity={item.amount} imgURL={item.imgURL} size={item.variant} />
-                            ))
-                        )}
-                </div> */}
-                <Cart  setTotal={setTotal} user={user}/>
+                <div className={styleItemCart}>
+                    {loading ? (
+                        <Spin size="large" />
+                    ) : (
+                        <>
+                            <h1 className="mt-[20px] font-bold text-3xl mb-2">
+                                Cart
+                            </h1>
+                            {cart.map((item, index) => (
+                                <ItemCart
+                                    key={index}
+                                    title={item.title}
+                                    price={item.price}
+                                    quantity={item.amount}
+                                    imgURL={item.imgURL}
+                                    size={item.variant}
+                                />
+                            ))}
+                        </>
+                    )}
+                </div>
+
                 <div className="w-full sm:w-1/2 sm:mx-5 mx-1">
                     <form className="flex flex-col w-full items-start  space-y-3   sm:w-5/6">
                         <h1 className="font-bold text-3xl mb-2">
@@ -164,7 +189,7 @@ export default function PaymetPage() {
                                 idInputValue="input-payment__email"
                                 widthInputValue="w-full"
                                 placeholderInputValue=""
-                                inputValue="binhwork245@gmail.com"
+                                inputValue={user ? user.email : ''}
                                 readOnly={true}
                             />
                         </div>
@@ -253,12 +278,38 @@ export default function PaymetPage() {
                             //COD: THANH TOÁN KHI NHẬN HÀNG
                             //PAYPAL: THANH TOÁN BẰNG PAYPAL
                         }
-                        <ItemPaymentOption title="Cash On Delivery" staticPath="/images/LogoCOD.png" codeDelivery={'COD'} selectedDeliveryOption={selectedDeliveryOption} setSelectedDeliveryOption={setSelectedDeliveryOption} />
-                        <ItemPaymentOption title="PayPal" staticPath="/images/logoPayPal.png" codeDelivery={'PAYPAL'} selectedDeliveryOption={selectedDeliveryOption} setSelectedDeliveryOption={setSelectedDeliveryOption} />
+                        <ItemPaymentOption
+                            title="Cash On Delivery"
+                            staticPath="/images/LogoCOD.png"
+                            codeDelivery={'COD'}
+                            selectedDeliveryOption={selectedDeliveryOption}
+                            setSelectedDeliveryOption={
+                                setSelectedDeliveryOption
+                            }
+                        />
+                        {/* <ItemPaymentOption
+                            title="PayPal"
+                            staticPath="/images/logoPayPal.png"
+                            codeDelivery={'PAYPAL'}
+                            selectedDeliveryOption={selectedDeliveryOption}
+                            setSelectedDeliveryOption={
+                                setSelectedDeliveryOption
+                            }
+                        /> */}
 
+                        <PayPal />
                         <div className="w-full">
-                            <button onMouseEnter={() => setIsHover(true)} onMouseLeave={() => setIsHover(false)}
-                                onClick={handleSubmit} className="font-semibold rounded w-full bg-green-500 hover:bg-green-400 p-5 text-white my-5">{isHover ? 'Order' : 'Total: ' + convertPriceIntoDollar(total)}</button>
+                            {contextHolder}
+                            <button
+                                onMouseEnter={() => setIsHover(true)}
+                                onMouseLeave={() => setIsHover(false)}
+                                onClick={handleSubmit}
+                                className="font-semibold rounded w-full bg-green-500 hover:bg-green-400 p-5 text-white my-5"
+                            >
+                                {isHover
+                                    ? 'Order'
+                                    : 'Total: ' + convertPriceIntoDollar(total)}
+                            </button>
                         </div>
                     </form>
                 </div>

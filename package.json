@@ -11,6 +11,8 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.7",
     "@ant-design/nextjs-registry": "^1.0.0",
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/react-paypal-js": "^8.5.0",
     "antd": "^5.19.1",
     "dayjs": "^1.11.11",
     "firebase": "^10.12.3",
