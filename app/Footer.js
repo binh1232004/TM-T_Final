@@ -1,15 +1,11 @@
 "use client";
 
-import { Layout, Image, Divider } from "antd";
-import { useEffect } from "react";
 import {
-    FacebookOutlined,
-    LinkedinOutlined,
-    TwitterOutlined,
-    YoutubeOutlined,
+    FacebookOutlined
 } from "@ant-design/icons";
+import { Image } from "antd";
 import Link from "next/link";
-import { default as NextImage } from "next/image";
+import { useEffect } from "react";
 
 const Footer = () => {
     useEffect(() => {
