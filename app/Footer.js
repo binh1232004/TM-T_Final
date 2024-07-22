@@ -1,14 +1,18 @@
+/**
+ * pageID = 61562657587763;
+ * appID = 406857895709258;
+ */
+
 "use client";
 
-import {
-    FacebookOutlined
-} from "@ant-design/icons";
-import { Image } from "antd";
-import Link from "next/link";
 import { useEffect } from "react";
+import { FacebookOutlined, MessageOutlined } from "@ant-design/icons";
+import { Button, Image } from "antd";
+import Link from "next/link";
 
 const Footer = () => {
     useEffect(() => {
+        // Tích hợp Tawk.to
         var Tawk_API = Tawk_API || {},
             Tawk_LoadStart = new Date();
         (function () {
@@ -20,10 +24,34 @@ const Footer = () => {
             s1.setAttribute("crossorigin", "*");
             s0.parentNode.insertBefore(s1, s0);
         })();
+
+        // Tích hợp Facebook Messenger Plugin
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: '406857895709258', // App ID
+                cookie: true,
+                xfbml: true,
+                version: 'v12.0'
+            });
+            FB.CustomerChat.showDialog();
+        };
+            // kết nối SDK
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            //js.src = "https://connect.facebook.net/en_US/sdk.js";
+            js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
     }, []);
 
+    const openMessenger = () => {
+        FB.CustomerChat.showDialog();
+    };
+
     return (
-        <div className="bg-[#001529] w-full h-fit">
+        <div className="bg-[#001529] w-full h-fit relative">
             <div className="flex justify-between [&_*]:text-white/90">
                 <div className="w-1/6 ml-20 opacity-90">
                     <Image src="/logo.png" preview={false} alt="logo" />
@@ -35,8 +63,7 @@ const Footer = () => {
                         </div>
                         <div className="flex flex-col gap-2">
                             <p>
-                                Address: 280 Đường An Dương vương, Phường 14, Quận 5, Hồ
-                                Chí Minh
+                                Address: 280 Đường An Dương Vương, Phường 14, Quận 5, Hồ Chí Minh
                             </p>
                             <p>Email: K48@Shop.hcmue.edu.vn</p>
                             <p>Phone: 0909 123 456</p>
@@ -104,6 +131,27 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+            <Button
+                type="primary"
+                shape="circle"
+                icon={<MessageOutlined />}
+                size="large"
+                style={{
+                    position: 'fixed',
+                    bottom: '20px',
+                    right: '20px',
+                    zIndex: 1000,
+                }}
+                onClick={openMessenger}
+            />
+            <div
+                className="fb-customerchat"
+                attribution="setup_tool"
+                page_id="61562657587763" // my page ID
+                theme_color="#0084ff"
+                logged_in_greeting="Hi! How can we help you?"
+                logged_out_greeting="Goodbye!"
+            />
         </div>
     );
 };
