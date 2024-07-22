@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { deleteUser, getUsers } from "@/lib/firebase";
-import { List, Spin, Typography } from "antd";
+import { Button, List, Spin, Typography } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
-import { useMessage } from "@/lib/utils";
+import { downloadObjectAsJson, useMessage } from "@/lib/utils";
 
 const { Title } = Typography;
 
@@ -59,6 +59,13 @@ export default function UserList() {
                     return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}></UserListItem>;
                 }}
             />
+            <div className="w-full flex flex-row justify-end">
+                <Button className="my-2" type="primary" onClick={() => {
+                    downloadObjectAsJson(users, "users");
+                }}>
+                    Export data
+                </Button>
+            </div>
         </Spin>
     </div>;
 }

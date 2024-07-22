@@ -1,7 +1,15 @@
 "use client";
 
-import { Button, List, Popconfirm, Typography } from "antd";
-import { ContainerOutlined, CrownTwoTone, DeleteOutlined, EditOutlined, WarningTwoTone } from "@ant-design/icons";
+import { Button, List, Popconfirm, Tooltip, Typography } from "antd";
+import {
+    ContainerOutlined,
+    CrownTwoTone,
+    DeleteOutlined,
+    DownloadOutlined,
+    EditOutlined,
+    WarningTwoTone
+} from "@ant-design/icons";
+import { downloadObjectAsJson } from "@/lib/utils";
 
 const { Text } = Typography;
 
@@ -24,21 +32,32 @@ export default function UserListItem({ user, onEdit = null, onDelete = null, onO
                     // TODO: find a way to delete user data
                 }}>Delete data</Button> : null}
                 {!deleted ? <>
-                    <Button size="small" disabled={deleted} type="default" onClick={() => {
-                        onOrders?.(user);
-                    }}><ContainerOutlined/></Button>
-                    <Button size="small" disabled={deleted} type="default" onClick={() => {
-                        onEdit?.(user);
-                    }}><EditOutlined/></Button>
-                    <Popconfirm
-                        title="Do you want to delete this user?"
-                        description="This action cannot be undone"
-                        okType={"danger"}
-                        onConfirm={() => onDelete?.(user)}
-                        icon={<WarningTwoTone twoToneColor="red"/>}
-                    >
-                        <Button size="small" type="primary" danger disabled={deleted}><DeleteOutlined/></Button>
-                    </Popconfirm>
+                    <Tooltip title="Download user data">
+                        <Button size="small" disabled={deleted} type="default" onClick={() => {
+                            downloadObjectAsJson(user, "user-" + user.info.email);
+                        }}><DownloadOutlined/></Button>
+                    </Tooltip>
+                    <Tooltip title="User's orders">
+                        <Button size="small" disabled={deleted} type="default" onClick={() => {
+                            onOrders?.(user);
+                        }}><ContainerOutlined/></Button>
+                    </Tooltip>
+                    <Tooltip title="Edit user data">
+                        <Button size="small" disabled={deleted} type="default" onClick={() => {
+                            onEdit?.(user);
+                        }}><EditOutlined/></Button>
+                    </Tooltip>
+                    <Tooltip title="Delete this user">
+                        <Popconfirm
+                            title="Do you want to delete this user?"
+                            description="This action cannot be undone"
+                            okType={"danger"}
+                            onConfirm={() => onDelete?.(user)}
+                            icon={<WarningTwoTone twoToneColor="red"/>}
+                        >
+                            <Button size="small" type="primary" danger disabled={deleted}><DeleteOutlined/></Button>
+                        </Popconfirm>
+                    </Tooltip>
                 </> : null}
             </div>
         </div>
