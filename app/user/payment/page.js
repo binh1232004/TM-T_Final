@@ -11,6 +11,7 @@ import { getProduct } from '@/lib/firebase_server';
 import { Spin } from 'antd';
 import { notification } from 'antd';
 import PayPal from './components/paymentPage/paypal';
+import {setPendingOrder} from '@/lib/firebase';
 export default function PaymetPage() {
     const [api, contextHolder] = notification.useNotification();
     const openNotification = () => {
@@ -35,10 +36,29 @@ export default function PaymetPage() {
     const [cart, setCart] = useState([]);
     const user = useUser();
     const [loading, setLoading] = useState(true);
+    const [items, setItems] = useState([]);
     const convertPriceIntoDollar = (price) => {
         return '$' + new Intl.NumberFormat('en-US').format(price);
     };
-
+    const convertPriceIntoFormatPayPal = (price) => {
+        return price + '.00';
+    };
+    useEffect(() => {
+        console.log(convertPriceIntoFormatPayPal(total));
+        setItems(
+            cart.map((item) => {
+                return {
+                    name: item.title,
+                    description: item.title,
+                    unit_amount: {
+                        currency_code: 'USD',
+                        value: convertPriceIntoFormatPayPal(item.price),
+                    },
+                    quantity: item.amount.toString(),
+                };
+            }),
+        );
+    }, [total, cart]);
     const styleItemCart = loading
         ? 'w-full sm:w-1/2 flex justify-center items-center'
         : 'w-full sm:w-1/2 flex flex-col';
@@ -89,7 +109,7 @@ export default function PaymetPage() {
                             element.price = price;
                             iTotal += price * element.amount;
                         }
-                        console.log(arrCart);
+                        //console.log(arrCart);
                         setTotal(iTotal);
                         setCart(arrCart);
                     } catch (error) {
@@ -103,7 +123,7 @@ export default function PaymetPage() {
             }
         }
     }, [user]);
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event, isPaid = true) => {
         event.preventDefault();
         // console.log(typedAddress, typedNote, selectedDeliveryOption, transformIdToNameDistrict(selectedDistrictId), transformIdToNameProvince(selectedProvinceId), transformIdToNameWard(selectedWardId));
         console.log(
@@ -113,15 +133,25 @@ export default function PaymetPage() {
             typedNote,
             selectedDeliveryOption,
         );
-        setOrder(user, {
-            address: typedAddress,
-            note: typedNote,
-            products: cart,
-            total: total,
-            delivery_option: selectedDeliveryOption,
-            status: false,
-        });
-        openNotification();
+        if (typedAddress.trim() === '') {
+            api['error']({
+                message: 'Address is required',
+                description: 'Please type your address',
+                duration: 2,
+            });
+        } else {
+            setOrder(user, {
+                address: typedAddress,
+                note: typedNote,
+                products: cart,
+                total: total,
+                delivery_option: selectedDeliveryOption,
+                status: isPaid,
+            });
+            openNotification();
+            await setPendingOrder(user, null);
+            redirectToHome();
+        }
     };
 
     const styleSelect =
@@ -193,14 +223,15 @@ export default function PaymetPage() {
                                 readOnly={true}
                             />
                         </div>
-                        <div className="w-full">
+                        <div className="w-full ">
                             <ItemInputText
                                 forPropertyLabel="address"
-                                labelValue="Address"
+                                labelValue="Address "
                                 idInputValue="input-payment__address"
                                 widthInputValue="w-full"
                                 placeholderInputValue="Type your address"
                                 onChange={handleTypedAddress}
+                                required={true}
                             />
                         </div>
                         {/* <div className="w-full flex sm:flex-row flex-col justify-center  items-center sm:space-x-5">
@@ -278,39 +309,52 @@ export default function PaymetPage() {
                             //COD: THANH TOÁN KHI NHẬN HÀNG
                             //PAYPAL: THANH TOÁN BẰNG PAYPAL
                         }
+
                         <ItemPaymentOption
                             title="Cash On Delivery"
-                            staticPath="/images/LogoCOD.png"
+                            staticPath="/LogoCOD.png"
                             codeDelivery={'COD'}
                             selectedDeliveryOption={selectedDeliveryOption}
                             setSelectedDeliveryOption={
                                 setSelectedDeliveryOption
                             }
                         />
-                        {/* <ItemPaymentOption
+                        {selectedDeliveryOption === 'COD' && (
+                            <div className="w-full">
+                                {contextHolder}
+                                <button
+                                    onMouseEnter={() => setIsHover(true)}
+                                    onMouseLeave={() => setIsHover(false)}
+                                    onClick={() => handleSubmit(event, false)}
+                                    className="font-semibold rounded w-full bg-green-500 hover:bg-green-400 p-5 text-white "
+                                >
+                                    {isHover
+                                        ? 'Order'
+                                        : 'Total: ' +
+                                          convertPriceIntoDollar(total)}
+                                </button>
+                            </div>
+                        )}
+                        <ItemPaymentOption
                             title="PayPal"
-                            staticPath="/images/logoPayPal.png"
+                            staticPath="/logoPayPal.png"
                             codeDelivery={'PAYPAL'}
                             selectedDeliveryOption={selectedDeliveryOption}
                             setSelectedDeliveryOption={
                                 setSelectedDeliveryOption
                             }
-                        /> */}
+                        />
 
-                        <PayPal />
-                        <div className="w-full">
-                            {contextHolder}
-                            <button
-                                onMouseEnter={() => setIsHover(true)}
-                                onMouseLeave={() => setIsHover(false)}
-                                onClick={handleSubmit}
-                                className="font-semibold rounded w-full bg-green-500 hover:bg-green-400 p-5 text-white my-5"
-                            >
-                                {isHover
-                                    ? 'Order'
-                                    : 'Total: ' + convertPriceIntoDollar(total)}
-                            </button>
-                        </div>
+                        {selectedDeliveryOption === 'PAYPAL' && (
+                            <div className="w-full">
+                                {contextHolder}
+                                <PayPal
+                                    total={convertPriceIntoFormatPayPal(total)}
+                                    items={items}
+                                    sendToDB={handleSubmit}
+                                />
+                            </div>
+                        )}
                     </form>
                 </div>
             </div>

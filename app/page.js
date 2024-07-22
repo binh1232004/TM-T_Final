@@ -34,7 +34,8 @@ export default function Home() {
             </Carousel>
             {Object.keys(catalogs).map((key) => {
                 return <div key={key} className="my-2">
-                    <ItemList key={key} catalog={key} extra={`/${catalogs[key].name.toLowerCase()}`}
+                    <ItemList key={key} catalog={catalogs[key].name.toLowerCase()}
+                              extra={`/${catalogs[key].name.toLowerCase()}`}
                               title={catalogs[key].name}></ItemList>;
                 </div>;
             })}
