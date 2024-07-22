@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginForm } from "@/app/LoginForm";
-import { logout, useCart, useUser } from "@/lib/firebase";
+import { logout, useCart, useUser, usePendingOrder } from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
@@ -13,7 +13,7 @@ import {
     ShoppingCartOutlined,
     UserOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Input, Menu, Popover, Spin } from "antd";
+import { Badge, Button, Input, Menu, Popover, Spin, List } from "antd";
 import { blue } from "@ant-design/colors";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -26,6 +26,7 @@ const Nav = () => {
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
     const cart = useCart();
+    const pendingOder = usePendingOrder();
     const [loaded, setLoaded] = useState(false);
     const [nav, setNav] = useState([
         {
@@ -68,6 +69,25 @@ const Nav = () => {
             ),
         },
     ]);
+    const [notification, setNotification] = useState({});
+    useEffect(() => {
+        if (pendingOder.length)
+            setNotification((prev) => {
+                return {
+                    ...prev,
+                    pendingOder: (
+                        <Link href="/user/payment" className="text-red-500">
+                            You have a pending oder!
+                        </Link>
+                    ),
+                };
+            });
+        else
+            setNotification((prev) => {
+                delete prev.pendingOder;
+                return prev;
+            });
+    }, [pendingOder]);
     const handleOpenChange = (newOpen) => {
         setOpen(newOpen);
     };
@@ -196,7 +216,7 @@ const Nav = () => {
                             // onSearch={onSearch}
                         />
                     </div>
-                    <div className="flex justify-center items-center mx-3 my-5">
+                    <div className="flex justify-center items-center mx-3 my-5 gap-4">
                         <div className="translate-y-1">
                             <Popover
                                 fresh
@@ -238,15 +258,54 @@ const Nav = () => {
                                 </Link>
                             </Popover>
                         </div>
-                        <Button className="!border-none !bg-transparent group">
-                            <Badge
-                                size="small"
-                                count={0}
-                                className="!text-white group-hover:!text-blue-500"
+                        <div className="translate-y-1">
+                            <Popover
+                                fresh
+                                placement="bottomRight"
+                                arrow={{ pointAtCenter: true }}
+                                title={
+                                    user ? (
+                                        "Notifications"
+                                    ) : (
+                                        <div className="text-center m-0">
+                                            Sign in to view notifications
+                                        </div>
+                                    )
+                                }
+                                content={
+                                    <List
+                                        bordered
+                                        dataSource={Object.keys(notification)}
+                                        renderItem={() => (
+                                            <List.Item>
+                                                {Object.keys(notification).map(
+                                                    (key, index) => {
+                                                        return notification[
+                                                            key
+                                                        ];
+                                                    }
+                                                )}
+                                            </List.Item>
+                                        )}
+                                    ></List>
+                                }
                             >
-                                <BellOutlined style={{ fontSize: "25px" }} />
-                            </Badge>
-                        </Button>
+                                <Link
+                                    href=""
+                                    className="!border-none !bg-transparent group"
+                                >
+                                    <Badge
+                                        size="small"
+                                        count={Object.keys(notification).length}
+                                        className="!text-white group-hover:!text-blue-500"
+                                    >
+                                        <BellOutlined
+                                            style={{ fontSize: "25px" }}
+                                        />
+                                    </Badge>
+                                </Link>
+                            </Popover>
+                        </div>
                     </div>
                 </div>
             </nav>

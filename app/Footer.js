@@ -52,13 +52,13 @@ const Footer = () => {
 
     return (
         <div className="bg-[#001529] w-full h-fit relative">
-            <div className="flex justify-between [&_*]:text-white/90">
+            <div className="flex justify-between [&_*]:text-white">
                 <div className="w-1/6 ml-20 opacity-90">
                     <Image src="/logo.png" preview={false} alt="logo" />
                 </div>
                 <div className="w-full flex gap-4 justify-evenly">
                     <div>
-                        <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white/90">
+                        <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white">
                             Contact
                         </div>
                         <div className="flex flex-col gap-2">
@@ -71,7 +71,7 @@ const Footer = () => {
                     </div>
 
                     <div>
-                        <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white/90">
+                        <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white">
                             Links
                         </div>
                         <div className="flex flex-col gap-2">
@@ -82,7 +82,7 @@ const Footer = () => {
                         </div>
                     </div>
                     <div>
-                        <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white/90">
+                        <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white">
                             Social media
                         </div>
                         <div className="flex flex-col gap-4">
