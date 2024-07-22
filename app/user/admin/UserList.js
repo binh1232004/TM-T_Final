@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { deleteUser, getUsers } from "@/lib/firebase";
-import { Button, List, Spin, Typography } from "antd";
+import { Button, List, Popover, Spin, Typography } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
-import { downloadObjectAsJson, useMessage } from "@/lib/utils";
+import { downloadObjectAsCsv, downloadObjectAsJson, useMessage } from "@/lib/utils";
+import { DownOutlined } from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -60,11 +61,31 @@ export default function UserList() {
                 }}
             />
             <div className="w-full flex flex-row justify-end">
-                <Button className="my-2" type="primary" onClick={() => {
-                    downloadObjectAsJson(users, "users");
-                }}>
-                    Export data
-                </Button>
+                <Popover placement="bottomRight" content={
+                    <div className="flex flex-col justify-center">
+                        <Button className="my-2" type="primary" onClick={() => {
+                            downloadObjectAsJson(users, "users");
+                        }}>
+                            Export JSON data
+                        </Button>
+                        <Button className="my-2" type="primary" onClick={() => {
+                            downloadObjectAsCsv(Object.keys(users).map((key) => {
+                                return {
+                                    uid: key,
+                                    email: users[key].info.email,
+                                };
+                            }), "users");
+                        }}>
+                            Export CSV data
+                        </Button>
+                    </div>
+                }>
+                    <Button className="my-2" iconPosition="end" icon={<DownOutlined/>} onClick={() => {
+                        // downloadObjectAsJson(users, "users");
+                    }}>
+                        Export data
+                    </Button>
+                </Popover>
             </div>
         </Spin>
     </div>;
