@@ -1,21 +1,20 @@
 "use client";
 
 import { LoginForm } from "@/app/LoginForm";
-import { logout, useCart, useUser, usePendingOrder } from "@/lib/firebase";
+import { logout, useCart, usePendingOrder, useUser } from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
     CreditCardOutlined,
     HomeOutlined,
     KeyOutlined,
+    MailOutlined,
     PoweroffOutlined,
     SettingOutlined,
     ShoppingCartOutlined,
-    UserOutlined,
-    MailOutlined
+    UserOutlined
 } from "@ant-design/icons";
-import { Badge, Button, Input, Menu, Popover, Spin, List } from "antd";
-import { blue } from "@ant-design/colors";
+import { Badge, Button, Input, List, Menu, Popover, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,7 +35,7 @@ const Nav = () => {
             label: (
                 <Link href="/">
                     <span>
-                        <HomeOutlined /> Home
+                        <HomeOutlined/> Home
                     </span>
                 </Link>
             ),
@@ -44,8 +43,7 @@ const Nav = () => {
     ]);
     const [userMenu, setUserMenu] = useState([
         {
-            key: "1",
-            icon: <SettingOutlined />,
+            key: "1", icon: <SettingOutlined/>,
             label: (
                 <Link href={"/user"}>
                     <span>Manage account</span>
@@ -53,8 +51,7 @@ const Nav = () => {
             ),
         },
         {
-            key: "2",
-            icon: <CreditCardOutlined />,
+            key: "2", icon: <CreditCardOutlined/>,
             label: (
                 <Link href={"/user/orders"}>
                     <span>Oders</span>
@@ -62,8 +59,7 @@ const Nav = () => {
             ),
         },
         {
-            key: "3",
-            icon: <PoweroffOutlined />,
+            key: "3", icon: <PoweroffOutlined/>,
             label: (
                 <Link href="">
                     <span>Sign out</span>
@@ -77,8 +73,7 @@ const Nav = () => {
             setNotification((prev) => {
                 return {
                     ...prev,
-                    pendingOder: (
-                        <Link href="/user/payment" className="text-red-500">
+                    pendingOder: (<Link href={"/user/payment"} className="text-red-500">
                             You have a pending oder!
                         </Link>
                     ),
@@ -103,7 +98,7 @@ const Nav = () => {
                     label: (
                         <Link href="/">
                             <span>
-                                <HomeOutlined /> Home
+                                <HomeOutlined/> Home
                             </span>
                         </Link>
                     ),
@@ -128,8 +123,7 @@ const Nav = () => {
             if (userMenu[0].key !== "/admin") {
                 setUserMenu([
                     {
-                        key: "/admin",
-                        icon: <KeyOutlined />,
+                        key: "/admin", icon: <KeyOutlined/>,
                         label: (
                             <Link href={"/user/admin"}>
                                 <span>Admin</span>
@@ -190,8 +184,7 @@ const Nav = () => {
                             >
                                 {user !== undefined ? (
                                     user?.email || "Sign in"
-                                ) : (
-                                    <Spin size="small" />
+                                ) : (<Spin size="small"/>
                                 )}
                             </Button>
                         </Popover>
@@ -274,22 +267,15 @@ const Nav = () => {
                                         </div>
                                     )
                                 }
-                                content={
-                                    <List
+                                content={user ? (<List
                                         bordered
                                         dataSource={Object.keys(notification)}
-                                        renderItem={() => (
-                                            <List.Item>
-                                                {Object.keys(notification).map(
-                                                    (key, index) => {
-                                                        return notification[
-                                                            key
-                                                        ];
-                                                    }
-                                                )}
-                                            </List.Item>
-                                        )}
-                                    ></List>
+                                        renderItem={() => (<List.Item>
+                                                {Object.keys(notification).map((key) => {
+                                                    return notification[key];
+                                                })}
+                                            </List.Item>)}
+                                    ></List>) : null
                                 }
                             >
                                 <Link
@@ -312,7 +298,8 @@ const Nav = () => {
                         <Popover
                             content={
                                 <div id="mc_embed_shell">
-                                    <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css" rel="stylesheet" type="text/css" />
+                                    <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css"
+                                          rel="stylesheet" type="text/css"/>
                                     <style type="text/css">
                                         {`
                                             #mc_embed_signup{background:#fff; clear:left; font:14px Helvetica,Arial,sans-serif; width: 600px;}
@@ -321,37 +308,50 @@ const Nav = () => {
                                         `}
                                     </style>
                                     <div id="mc_embed_signup">
-                                        <form action="https://zohomail.us17.list-manage.com/subscribe/post?u=16511ef613aa60fd4375c250b&amp;id=02fd0253cd&amp;f_id=0087c2e1f0" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" className="validate" target="_blank">
+                                        <form
+                                            action="https://zohomail.us17.list-manage.com/subscribe/post?u=16511ef613aa60fd4375c250b&amp;id=02fd0253cd&amp;f_id=0087c2e1f0"
+                                            method="post" id="mc-embedded-subscribe-form"
+                                            name="mc-embedded-subscribe-form" className="validate" target="_blank">
                                             <div id="mc_embed_signup_scroll">
                                                 <h2>Subscribe</h2>
                                                 <div className="indicates-required">
                                                     <span className="asterisk">*</span> indicates required
                                                 </div>
                                                 <div className="mc-field-group">
-                                                    <label htmlFor="mce-EMAIL">Email Address <span className="asterisk">*</span></label>
-                                                    <input type="email" name="EMAIL" className="required email" id="mce-EMAIL" required value="" />
+                                                    <label htmlFor="mce-EMAIL">Email Address <span
+                                                        className="asterisk">*</span></label>
+                                                    <input type="email" name="EMAIL" className="required email"
+                                                           id="mce-EMAIL" required value=""/>
                                                 </div>
                                                 <div className="mc-field-group">
                                                     <label htmlFor="mce-FNAME">First Name </label>
-                                                    <input type="text" name="FNAME" className="text" id="mce-FNAME" value="" />
+                                                    <input type="text" name="FNAME" className="text" id="mce-FNAME"
+                                                           value=""/>
                                                 </div>
                                                 <div className="mc-field-group">
                                                     <label htmlFor="mce-LNAME">Last Name </label>
-                                                    <input type="text" name="LNAME" className="text" id="mce-LNAME" value="" />
+                                                    <input type="text" name="LNAME" className="text" id="mce-LNAME"
+                                                           value=""/>
                                                 </div>
                                                 <div className="mc-field-group">
                                                     <label htmlFor="mce-PHONE">Phone Number </label>
-                                                    <input type="text" name="PHONE" className="REQ_CSS" id="mce-PHONE" value="" />
+                                                    <input type="text" name="PHONE" className="REQ_CSS" id="mce-PHONE"
+                                                           value=""/>
                                                 </div>
                                                 <div id="mce-responses" className="clear foot">
-                                                    <div className="response" id="mce-error-response" style={{display: "none"}}></div>
-                                                    <div className="response" id="mce-success-response" style={{display: "none"}}></div>
-                                                </div>    
-                                                <div style={{position: "absolute", left: "-5000px"}} aria-hidden="true">
-                                                    <input type="text" name="b_16511ef613aa60fd4375c250b_02fd0253cd" tabIndex="-1" value="" />
+                                                    <div className="response" id="mce-error-response"
+                                                         style={{ display: "none" }}></div>
+                                                    <div className="response" id="mce-success-response"
+                                                         style={{ display: "none" }}></div>
+                                                </div>
+                                                <div style={{ position: "absolute", left: "-5000px" }}
+                                                     aria-hidden="true">
+                                                    <input type="text" name="b_16511ef613aa60fd4375c250b_02fd0253cd"
+                                                           tabIndex="-1" value=""/>
                                                 </div>
                                                 <div className="clear">
-                                                    <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" className="button" />
+                                                    <input type="submit" value="Subscribe" name="subscribe"
+                                                           id="mc-embedded-subscribe" className="button"/>
                                                 </div>
                                             </div>
                                         </form>
@@ -364,7 +364,7 @@ const Nav = () => {
                             onOpenChange={setMailchimpOpen}
                         >
                             <Button className="!border-none !bg-transparent group">
-                                <MailOutlined style={{ fontSize: "25px", color: "white" }} />
+                                <MailOutlined style={{ fontSize: "25px", color: "white" }}/>
                             </Button>
                         </Popover>
                     </div>
