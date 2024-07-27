@@ -99,9 +99,9 @@ const Footer = () => {
                                                 </div>
                                                 
                                                 
-                                                <div className="clear">
+                                                <div className="clear ">
                                                     <input type="submit" value="Subscribe" name="subscribe"
-                                                           id="mc-embedded-subscribe" className="button"/>
+                                                           id="mc-embedded-subscribe" className="button "/>
                                                 </div>
                                             </div>
                                         </form>
