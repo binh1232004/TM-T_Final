@@ -7,10 +7,14 @@
 
 import { useEffect } from "react";
 import { FacebookOutlined, MessageOutlined } from "@ant-design/icons";
+import { useUser } from "@/lib/firebase";
 import { Button, Image } from "antd";
 import Link from "next/link";
 
 const Footer = () => {
+    const user = useUser();
+    const userEmail = user?.email || "";
+
     useEffect(() => {
         // Tích hợp Tawk.to
         var Tawk_API = Tawk_API || {},
@@ -69,11 +73,11 @@ const Footer = () => {
                             <p>Phone: 0909 123 456</p>
                         </div>
                         <div id="amc_embed_shell">
-                                    <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css"
+                            <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css"
                                           rel="stylesheet" type="text/css"/>
                                     <style type="text/css">
                                         {`
-                                            #mc_embed_signup{background:#001529; clear:left; font:14px Helvetica,Arial,sans-serif; }
+                                            #mc_embed_signup{clear:left; font:14px Helvetica,Arial,sans-serif; }
                                             /* Add your own Mailchimp form style overrides in your site stylesheet or in this style block.
                                                We recommend moving this block and the preceding CSS link to the HEAD of your HTML file. */
                                         `}
@@ -84,25 +88,17 @@ const Footer = () => {
                                             method="post" id="mc-embedded-subscribe-form"
                                             name="mc-embedded-subscribe-form" className="validate" target="_blank">
                                             <div id="mc_embed_signup_scroll">
-                                                
+                                            <div className="text-2xl font-extrabold capitalize my-5 h-fit w-fit border-b-2 border-white">
+                                                Subcribe now !!!
+                                            </div>
                                                 <div className="mc-field-group">
                                                     <label htmlFor="mce-EMAIL">Your Email Address <span
                                                         className="asterisk">*</span></label>
                                                     <input type="email" name="EMAIL" className="required email bg-[#001529]"
-                                                           id="mce-EMAIL" defaultValue={""}/>
+                                                           id="mce-EMAIL" value={userEmail}></input>
                                                 </div>
                                                 
-                                                <div id="mce-responses" className="clear foot">
-                                                    <div className="response" id="mce-error-response"
-                                                         style={{ display: "none" }}></div>
-                                                    <div className="response" id="mce-success-response"
-                                                         style={{ display: "none" }}></div>
-                                                </div>
-                                                <div style={{ position: "absolute", left: "-5000px" }}
-                                                     aria-hidden="true">
-                                                    <input type="text" name="b_16511ef613aa60fd4375c250b_02fd0253cd"
-                                                           tabIndex="-1" value=""/>
-                                                </div>
+                                                
                                                 <div className="clear">
                                                     <input type="submit" value="Subscribe" name="subscribe"
                                                            id="mc-embedded-subscribe" className="button"/>
