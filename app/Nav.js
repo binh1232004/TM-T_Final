@@ -1,20 +1,20 @@
 "use client";
 
 import { LoginForm } from "@/app/LoginForm";
-import { logout, useCart, useUser } from "@/lib/firebase";
+import { logout, useCart, usePendingOrder, useUser } from "@/lib/firebase";
 import { getCatalogs } from "@/lib/firebase_server";
 import {
     BellOutlined,
     CreditCardOutlined,
     HomeOutlined,
     KeyOutlined,
+    MailOutlined,
     PoweroffOutlined,
     SettingOutlined,
     ShoppingCartOutlined,
-    UserOutlined,
+    UserOutlined
 } from "@ant-design/icons";
-import { Badge, Button, Input, Menu, Popover, Spin } from "antd";
-import { blue } from "@ant-design/colors";
+import { Badge, Button, Input, List, Menu, Popover, Spin } from "antd";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -25,7 +25,9 @@ const Nav = () => {
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
+    const [mailchimpOpen, setMailchimpOpen] = useState(false); // State for Mailchimp popover
     const cart = useCart();
+    const pendingOder = usePendingOrder();
     const [loaded, setLoaded] = useState(false);
     const [nav, setNav] = useState([
         {
@@ -33,7 +35,7 @@ const Nav = () => {
             label: (
                 <Link href="/">
                     <span>
-                        <HomeOutlined /> Home
+                        <HomeOutlined/> Home
                     </span>
                 </Link>
             ),
@@ -41,8 +43,7 @@ const Nav = () => {
     ]);
     const [userMenu, setUserMenu] = useState([
         {
-            key: "1",
-            icon: <SettingOutlined />,
+            key: "1", icon: <SettingOutlined/>,
             label: (
                 <Link href={"/user"}>
                     <span>Manage account</span>
@@ -50,8 +51,7 @@ const Nav = () => {
             ),
         },
         {
-            key: "2",
-            icon: <CreditCardOutlined />,
+            key: "2", icon: <CreditCardOutlined/>,
             label: (
                 <Link href={"/user/orders"}>
                     <span>Oders</span>
@@ -59,8 +59,7 @@ const Nav = () => {
             ),
         },
         {
-            key: "3",
-            icon: <PoweroffOutlined />,
+            key: "3", icon: <PoweroffOutlined/>,
             label: (
                 <Link href="">
                     <span>Sign out</span>
@@ -68,6 +67,24 @@ const Nav = () => {
             ),
         },
     ]);
+    const [notification, setNotification] = useState({});
+    useEffect(() => {
+        if (pendingOder.length)
+            setNotification((prev) => {
+                return {
+                    ...prev,
+                    pendingOder: (<Link href={"/user/payment"} className="text-red-500">
+                            You have a pending oder!
+                        </Link>
+                    ),
+                };
+            });
+        else
+            setNotification((prev) => {
+                delete prev.pendingOder;
+                return prev;
+            });
+    }, [pendingOder]);
     const handleOpenChange = (newOpen) => {
         setOpen(newOpen);
     };
@@ -81,7 +98,7 @@ const Nav = () => {
                     label: (
                         <Link href="/">
                             <span>
-                                <HomeOutlined /> Home
+                                <HomeOutlined/> Home
                             </span>
                         </Link>
                     ),
@@ -106,8 +123,7 @@ const Nav = () => {
             if (userMenu[0].key !== "/admin") {
                 setUserMenu([
                     {
-                        key: "/admin",
-                        icon: <KeyOutlined />,
+                        key: "/admin", icon: <KeyOutlined/>,
                         label: (
                             <Link href={"/user/admin"}>
                                 <span>Admin</span>
@@ -168,8 +184,7 @@ const Nav = () => {
                             >
                                 {user !== undefined ? (
                                     user?.email || "Sign in"
-                                ) : (
-                                    <Spin size="small" />
+                                ) : (<Spin size="small"/>
                                 )}
                             </Button>
                         </Popover>
@@ -196,7 +211,7 @@ const Nav = () => {
                             // onSearch={onSearch}
                         />
                     </div>
-                    <div className="flex justify-center items-center mx-3 my-5">
+                    <div className="flex justify-center items-center mx-3 my-5 gap-4">
                         <div className="translate-y-1">
                             <Popover
                                 fresh
@@ -238,15 +253,48 @@ const Nav = () => {
                                 </Link>
                             </Popover>
                         </div>
-                        <Button className="!border-none !bg-transparent group">
-                            <Badge
-                                size="small"
-                                count={0}
-                                className="!text-white group-hover:!text-blue-500"
+                        <div className="translate-y-1">
+                            <Popover
+                                fresh
+                                placement="bottomRight"
+                                arrow={{ pointAtCenter: true }}
+                                title={
+                                    user ? (
+                                        "Notifications"
+                                    ) : (
+                                        <div className="text-center m-0">
+                                            Sign in to view notifications
+                                        </div>
+                                    )
+                                }
+                                content={user ? (<List
+                                        bordered
+                                        dataSource={Object.keys(notification)}
+                                        renderItem={() => (<List.Item>
+                                                {Object.keys(notification).map((key) => {
+                                                    return notification[key];
+                                                })}
+                                            </List.Item>)}
+                                    ></List>) : null
+                                }
                             >
-                                <BellOutlined style={{ fontSize: "25px" }} />
-                            </Badge>
-                        </Button>
+                                <Link
+                                    href=""
+                                    className="!border-none !bg-transparent group"
+                                >
+                                    <Badge
+                                        size="small"
+                                        count={Object.keys(notification).length}
+                                        className="!text-white group-hover:!text-blue-500"
+                                    >
+                                        <BellOutlined
+                                            style={{ fontSize: "25px" }}
+                                        />
+                                    </Badge>
+                                </Link>
+                            </Popover>
+                        </div>
+                        
                     </div>
                 </div>
             </nav>
