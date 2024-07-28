@@ -37,7 +37,6 @@ const Footer = () => {
                 xfbml: true,
                 version: 'v12.0'
             });
-            FB.CustomerChat.showDialog();
         };
             // kết nối SDK
         (function(d, s, id) {
@@ -51,7 +50,11 @@ const Footer = () => {
     }, []);
 
     const openMessenger = () => {
-        FB.CustomerChat.showDialog();
+        if (window.FB) {
+            window.FB.CustomerChat.showDialog();
+        } else {
+            console.error("Facebook SDK not loaded yet");
+        }
     };
 
     return (
@@ -72,8 +75,8 @@ const Footer = () => {
                             <p>Email: K48@Shop.hcmue.edu.vn</p>
                             <p>Phone: 0909 123 456</p>
                         </div>
-                        <div id="amc_embed_shell">
-                            <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css"
+                        <div id="mc_embed_shell">
+                            <link href="http://cdn-images.mailchimp.com/embedcode/classic-061523.css"
                                           rel="stylesheet" type="text/css"/>
                                     <style type="text/css">
                                         {`
@@ -177,7 +180,7 @@ const Footer = () => {
                 size="large"
                 style={{
                     position: 'fixed',
-                    bottom: '20px',
+                    bottom: '100px',
                     right: '20px',
                     zIndex: 1000,
                 }}
