@@ -43,17 +43,18 @@ const Footer = () => {
             var js, fjs = d.getElementsByTagName(s)[0];
             if (d.getElementById(id)) return;
             js = d.createElement(s); js.id = id;
-            //js.src = "https://connect.facebook.net/en_US/sdk.js";
-            js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
+            js.src = "https://connect.facebook.net/en_US/sdk.js";
+            //js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'facebook-jssdk'));
     }, []);
 
     const openMessenger = () => {
         if (window.FB) {
-            window.FB.CustomerChat.showDialog();
+            //window.FB.CustomerChat.showDialog();
+            window.open("https://m.me/385179104674572", "_blank");
         } else {
-            console.error("Facebook SDK not loaded yet");
+            console.error("Facebook SDK not loaded yet"); 
         }
     };
 
@@ -76,7 +77,7 @@ const Footer = () => {
                             <p>Phone: 0909 123 456</p>
                         </div>
                         <div id="mc_embed_shell">
-                            <link href="http://cdn-images.mailchimp.com/embedcode/classic-061523.css"
+                            <link href="//cdn-images.mailchimp.com/embedcode/classic-061523.css"
                                           rel="stylesheet" type="text/css"/>
                                     <style type="text/css">
                                         {`
