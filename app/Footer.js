@@ -1,7 +1,4 @@
-/**
- * pageID = 61562657587763;
- * appID = 406857895709258;
- */
+
 
 "use client";
 
@@ -10,6 +7,7 @@ import { FacebookOutlined, MessageOutlined } from "@ant-design/icons";
 import { useUser } from "@/lib/firebase";
 import { Button, Image } from "antd";
 import Link from "next/link";
+import styles from "../public/messBtn.module.css"
 
 const Footer = () => {
     const user = useUser();
@@ -29,35 +27,12 @@ const Footer = () => {
             s0.parentNode.insertBefore(s1, s0);
         })();
 
-        // Tích hợp Facebook Messenger Plugin
-        window.fbAsyncInit = function() {
-            FB.init({
-                appId: '406857895709258', // App ID
-                cookie: true,
-                xfbml: true,
-                version: 'v12.0'
-            });
-        };
-            // kết nối SDK
-        (function(d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s); js.id = id;
-            js.src = "https://connect.facebook.net/en_US/sdk.js";
-            //js.src = "https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
     }, []);
 
-    const openMessenger = () => {
-        if (window.FB) {
-            //window.FB.CustomerChat.showDialog();
-            window.open("https://m.me/385179104674572", "_blank");
-        } else {
-            console.error("Facebook SDK not loaded yet"); 
-        }
+    const goMessenger = () => {
+        window.open = ('https://m.me/385179104674572', '_blank');
     };
-
+    
     return (
         <div className="bg-[#001529] w-full h-fit relative">
             <div className="flex justify-between [&_*]:text-white">
@@ -105,7 +80,7 @@ const Footer = () => {
                                                 
                                                 <div className="clear ">
                                                     <input type="submit" value="Subscribe" name="subscribe"
-                                                           id="mc-embedded-subscribe" className="button "/>
+                                                           id="mc-embedded-subscribe" className="button"/>
                                                 </div>
                                             </div>
                                         </form>
@@ -174,27 +149,11 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
-            <Button
-                type="primary"
-                shape="circle"
-                icon={<MessageOutlined />}
-                size="large"
-                style={{
-                    position: 'fixed',
-                    bottom: '100px',
-                    right: '20px',
-                    zIndex: 1000,
-                }}
-                onClick={openMessenger}
-            />
-            <div
-                className="fb-customerchat"
-                attribution="setup_tool"
-                page_id="61562657587763" // my page ID
-                theme_color="#0084ff"
-                logged_in_greeting="Hi! How can we help you?"
-                logged_out_greeting="Goodbye!"
-            />
+            <a className={styles.messBtn} target="_blank" href="https://m.me/385179104674572">
+                <Image 
+                preview={false}
+                src="https://file.hstatic.net/1000288298/file/facebook_messenger_icon_d24cc42322fc4c2c8e15fcccac663e3a_large.png"/>
+            </a>
         </div>
     );
 };
