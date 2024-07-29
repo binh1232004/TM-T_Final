@@ -312,7 +312,7 @@ export default function PaymetPage() {
 
                         <ItemPaymentOption
                             title="Cash On Delivery"
-                            staticPath="/LogoCOD.png"
+                            staticPath="/logoCOD.png"
                             codeDelivery={'COD'}
                             selectedDeliveryOption={selectedDeliveryOption}
                             setSelectedDeliveryOption={
