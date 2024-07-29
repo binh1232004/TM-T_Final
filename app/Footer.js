@@ -2,10 +2,10 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FacebookOutlined, MessageOutlined } from "@ant-design/icons";
 import { useUser } from "@/lib/firebase";
-import { Button, Image } from "antd";
+import { Button, Image, Tooltip, Popover } from "antd";
 import Link from "next/link";
 import styles from "../public/messBtn.module.css"
 
@@ -13,10 +13,11 @@ const Footer = () => {
     const user = useUser();
     const userEmail = user?.email || "";
 
+    const [visible, setVisible] = useState(false);
+
     useEffect(() => {
         // Tích hợp Tawk.to
-        var Tawk_API = Tawk_API || {},
-            Tawk_LoadStart = new Date();
+        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
         (function () {
             var s1 = document.createElement("script"),
                 s0 = document.getElementsByTagName("script")[0];
@@ -27,11 +28,10 @@ const Footer = () => {
             s0.parentNode.insertBefore(s1, s0);
         })();
 
+        setVisible(true);
+        const timer = setTimeout(() => setVisible(false), 6000);
+        return () => clearTimeout(timer);
     }, []);
-
-    const goMessenger = () => {
-        window.open = ('https://m.me/385179104674572', '_blank');
-    };
     
     return (
         <div className="bg-[#001529] w-full h-fit relative">
@@ -149,11 +149,13 @@ const Footer = () => {
                     </div>
                 </div>
             </div>
+            <Popover title="CHAT WITH OUR ^_^ " placement="left" visible={visible} trigger={"hover"}>
             <a className={styles.messBtn} target="_blank" href="https://m.me/385179104674572">
                 <Image 
                 preview={false}
                 src="https://file.hstatic.net/1000288298/file/facebook_messenger_icon_d24cc42322fc4c2c8e15fcccac663e3a_large.png"/>
             </a>
+            </Popover>
         </div>
     );
 };
