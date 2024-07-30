@@ -3,6 +3,7 @@
 import { Layout } from "antd";
 import Nav from "@/app/Nav";
 import Footer from "./Footer";
+import RSSWidget from "./RSSWidget";
 
 export default function MainLayout({ children }) {
     return (
@@ -14,13 +15,14 @@ export default function MainLayout({ children }) {
             }}
         >
             <Layout.Header>
-                <Nav/>
+                <Nav />
             </Layout.Header>
             <Layout.Content style={{ minHeight: "90vh" }}>
-                                 {children}
+                {children}
+                <RSSWidget />
             </Layout.Content>
             <Layout.Footer className="!p-0">
-                <Footer/>
+                <Footer />
             </Layout.Footer>
         </Layout>
     );
