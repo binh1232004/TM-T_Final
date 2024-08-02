@@ -51,13 +51,21 @@ const CartItem = ({ cartItem, onEdit, onDelete, onChecked, small, catalogMap = n
                                 className={`${small ? "!m-0" : ""} text-black`}
                                 ellipsis={{ rows: 2 }}
                             >
-                                {cartItem.name}
+                                <div>
+                                    <div>
+                                        {cartItem.name}
+                                    </div>
+                                    {small ? <div className="opacity-70">
+                                        Size: {cartItem.variant.toUpperCase()}
+                                    </div> : null}
+                                </div>
+
                             </Link>
                         </div>
                     </div>
                 </div>
                 <div className={`my-auto ${small ? "text-right" : ""}`}>
-                    <p>${numberWithSeps(cartItem.price)}</p>
+                    <p>${numberWithSeps(cartItem.price)} {small ? `x${cartItem.amount}` : ""}</p>
                 </div>
                 {!small ? (
                     <>
