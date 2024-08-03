@@ -1,9 +1,8 @@
 "use client";
 
-import { Layout } from "antd";
 import Nav from "@/app/Nav";
+import { Layout } from "antd";
 import Footer from "./Footer";
-import RSSWidget from "./RSSWidget";
 
 export default function MainLayout({ children }) {
     return (
@@ -19,7 +18,6 @@ export default function MainLayout({ children }) {
             </Layout.Header>
             <Layout.Content style={{ minHeight: "90vh" }}>
                 {children}
-                <RSSWidget />
             </Layout.Content>
             <Layout.Footer className="!p-0">
                 <Footer />

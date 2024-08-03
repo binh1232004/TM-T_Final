@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { Carousel, Image } from "antd";
 import { getBanners } from "@/lib/firebase";
 import Link from "next/link";
+import RSSWidget from "./RSSWidget";
 
 export default function Home() {
     const [catalogs, setCatalogs] = useState({});
@@ -39,6 +40,7 @@ export default function Home() {
                               title={catalogs[key].name}></ItemList>;
                 </div>;
             })}
+             <RSSWidget />
         </div>
     );
 }
