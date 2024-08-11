@@ -36,12 +36,12 @@ const orderListItem = (order) => {
 };
 
 
-export default function Orders() {
+export default function Orders({ uid = null }) {
     const [orders, setOrders] = useState({});
     const [loaded, setLoaded] = useState(false);
 
     useEffect(() => {
-        getOrders().then((orders) => {
+        getOrders(uid).then((orders) => {
             if (orders.status === "success") {
                 setOrders(Object.keys(orders.data).map((key) => {
                     return {
@@ -53,11 +53,11 @@ export default function Orders() {
                 setLoaded(true);
             }
         });
-    }, []);
+    }, [uid]);
 
     return <Spin spinning={!loaded}>
         <Divider orientation="left" className="!my-0" orientationMargin="0">
-            <Title level={3}>Your orders</Title>
+            <Title level={3}>{uid ? "" : "Your orders"}</Title>
         </Divider>
         <List
             dataSource={Object.values(orders)}

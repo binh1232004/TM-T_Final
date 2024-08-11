@@ -7,6 +7,7 @@ import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
 import { downloadObjectAsCsv, downloadObjectAsJson, useMessage } from "@/lib/utils";
 import { DownOutlined } from "@ant-design/icons";
+import UserOrders from "@/app/user/admin/UserOrders";
 
 const { Title } = Typography;
 
@@ -16,6 +17,7 @@ export default function UserList() {
     const [currentUser, setCurrentUser] = useState({});
     const [reload, setReload] = useState(false);
     const [userModal, setUserModal] = useState(false);
+    const [userOrders, setUserOrders] = useState(false);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -43,12 +45,18 @@ export default function UserList() {
         setCurrentUser(user);
     };
 
+    const onOrder = (user) => {
+        setUserOrders(true);
+        setCurrentUser(user);
+    };
+
     return <div>
         <Spin spinning={loading} size="large">
             {contextHolder}
             <Title level={3}>Edit users</Title>
             <UserForm user={currentUser} open={userModal} onClose={() => setUserModal(false)}
                       onComplete={() => setReload(!reload)}></UserForm>
+            <UserOrders user={currentUser} open={userOrders} onClose={() => setUserOrders(false)}></UserOrders>
             <List
                 size="small"
                 bordered
@@ -57,7 +65,8 @@ export default function UserList() {
                 })}
                 pagination={{ position: "bottom", align: "center" }}
                 renderItem={(item) => {
-                    return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}></UserListItem>;
+                    return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}
+                                         onOrder={onOrder}></UserListItem>;
                 }}
             />
             <div className="w-full flex flex-row justify-end">
@@ -73,6 +82,8 @@ export default function UserList() {
                                 return {
                                     uid: key,
                                     email: users[key].info.email,
+                                    name: users[key].info.name,
+                                    deleted: users[key]?.deleted || false,
                                 };
                             }), "users");
                         }}>
@@ -80,9 +91,7 @@ export default function UserList() {
                         </Button>
                     </div>
                 }>
-                    <Button className="my-2" iconPosition="end" icon={<DownOutlined/>} onClick={() => {
-                        // downloadObjectAsJson(users, "users");
-                    }}>
+                    <Button className="my-2" iconPosition="end" icon={<DownOutlined/>}>
                         Export data
                     </Button>
                 </Popover>

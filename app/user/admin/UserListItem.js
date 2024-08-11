@@ -13,7 +13,7 @@ import { downloadObjectAsJson } from "@/lib/utils";
 
 const { Text } = Typography;
 
-export default function UserListItem({ user, onEdit = null, onDelete = null, onOrders = null }) {
+export default function UserListItem({ user, onEdit = null, onDelete = null, onOrder = null }) {
 
     const deleted = user.deleted || user?.will_delete;
 
@@ -39,7 +39,7 @@ export default function UserListItem({ user, onEdit = null, onDelete = null, onO
                     </Tooltip>
                     <Tooltip title="User's orders">
                         <Button size="small" disabled={deleted} type="default" onClick={() => {
-                            onOrders?.(user);
+                            onOrder?.(user);
                         }}><ContainerOutlined/></Button>
                     </Tooltip>
                     <Tooltip title="Edit user data">
