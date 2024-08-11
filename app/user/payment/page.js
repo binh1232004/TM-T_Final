@@ -11,7 +11,8 @@ import { getProduct } from '@/lib/firebase_server';
 import { Spin } from 'antd';
 import { notification } from 'antd';
 import PayPal from './components/paymentPage/paypal';
-import {setPendingOrder} from '@/lib/firebase';
+import { setPendingOrder } from '@/lib/firebase';
+import { resolve } from 'styled-jsx/css';
 export default function PaymetPage() {
     const [api, contextHolder] = notification.useNotification();
     const openNotification = () => {
@@ -44,7 +45,7 @@ export default function PaymetPage() {
         return price + '.00';
     };
     useEffect(() => {
-        console.log(convertPriceIntoFormatPayPal(total));
+        // console.log(convertPriceIntoFormatPayPal(total));
         setItems(
             cart.map((item) => {
                 return {
@@ -55,6 +56,7 @@ export default function PaymetPage() {
                         value: convertPriceIntoFormatPayPal(item.price),
                     },
                     quantity: item.amount.toString(),
+                    variant: item.variant,
                 };
             }),
         );
@@ -125,20 +127,13 @@ export default function PaymetPage() {
     }, [user]);
     const handleSubmit = async (event, isPaid = true) => {
         event.preventDefault();
-        // console.log(typedAddress, typedNote, selectedDeliveryOption, transformIdToNameDistrict(selectedDistrictId), transformIdToNameProvince(selectedProvinceId), transformIdToNameWard(selectedWardId));
-        console.log(
-            cart,
-            total,
-            typedAddress,
-            typedNote,
-            selectedDeliveryOption,
-        );
         if (typedAddress.trim() === '') {
             api['error']({
                 message: 'Address is required',
                 description: 'Please type your address',
                 duration: 2,
             });
+            return false;
         } else {
             setOrder(user, {
                 address: typedAddress,
@@ -151,6 +146,7 @@ export default function PaymetPage() {
             openNotification();
             await setPendingOrder(user, null);
             redirectToHome();
+            return true;
         }
     };
 
@@ -312,7 +308,7 @@ export default function PaymetPage() {
 
                         <ItemPaymentOption
                             title="Cash On Delivery"
-                            staticPath="/LogoCOD.png"
+                            staticPath="/logoCOD.png"
                             codeDelivery={'COD'}
                             selectedDeliveryOption={selectedDeliveryOption}
                             setSelectedDeliveryOption={
@@ -331,7 +327,7 @@ export default function PaymetPage() {
                                     {isHover
                                         ? 'Order'
                                         : 'Total: ' +
-                                          convertPriceIntoDollar(total)}
+                                        convertPriceIntoDollar(total)}
                                 </button>
                             </div>
                         )}
@@ -353,6 +349,56 @@ export default function PaymetPage() {
                                     items={items}
                                     sendToDB={handleSubmit}
                                 />
+                            </div>
+                        )}
+                        <ItemPaymentOption
+                            title="VnPay"
+                            staticPath="/logoVNPAY.png"
+                            codeDelivery={'VNPAY'}
+                            selectedDeliveryOption={selectedDeliveryOption}
+                            setSelectedDeliveryOption={
+                                setSelectedDeliveryOption
+                            }
+                        />
+
+                        {selectedDeliveryOption === 'VNPAY' && (
+                            <div className="w-full">
+                                {contextHolder}
+                                <button
+                                    onMouseEnter={() => setIsHover(true)}
+                                    onMouseLeave={() => setIsHover(false)}
+                                    onClick={async (event) => {
+                                        event.preventDefault();
+                                        const isTypedAddress = await handleSubmit(event);
+                                        if(!isTypedAddress)
+                                            return 
+                                        const response = await fetch('/api/vnpay', {
+                                            method: 'POST',
+                                            headers: {
+                                                'Content-Type': 'application/json',
+                                            },
+                                            body: JSON.stringify({
+                                                total: total,
+                                                items: items,
+                                            }),
+                                        })
+                                        if(!response.ok){
+                                            const errorData = await response.json();
+                                            console.error('Error: ', errorData);    
+                                        }
+                                        else{
+                                            const data = await response.json();
+                                            if(data.redirectUrl)
+                                                window.location.href = data.redirectUrl;
+                                        }
+                                    }}
+                                    className="font-semibold rounded w-full bg-green-500 hover:bg-green-400 p-5 text-white "
+                                >
+                                    {isHover
+                                        ? 'Order'
+                                        : 'Total: ' +
+                                        convertPriceIntoDollar(total)}
+                                </button>
                             </div>
                         )}
                     </form>
