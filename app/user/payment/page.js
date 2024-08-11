@@ -5,13 +5,12 @@ import ItemInputText from './components/paymentPage/itemInputText.js';
 import useDeliveryAddress from './hooks/paymentPage/useDeliveryAddress.js';
 import ItemPaymentOption from './components/paymentPage/itemPaymentOption';
 import ItemCart from './components/paymentPage/itemCart';
-import { useUser, getPendingOrder, setOrder } from '@/lib/firebase';
+import { useUser, getPendingOrder, setOrder, setPendingOrder} from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 import { getProduct } from '@/lib/firebase_server';
 import { Spin } from 'antd';
 import { notification } from 'antd';
 import PayPal from './components/paymentPage/paypal';
-import { setPendingOrder } from '@/lib/firebase';
 import { resolve } from 'styled-jsx/css';
 export default function PaymetPage() {
     const [api, contextHolder] = notification.useNotification();
@@ -84,9 +83,9 @@ export default function PaymetPage() {
         }
     };
     useEffect(() => {
-        if (user === null) {
+        if (user === null ) {
             redirectToHome();
-        } else {
+        } else if(user !== undefined){
             if (getPendingOrder(user).length !== 0) {
                 let iTotal = 0;
                 const updateCartWithImages = async () => {
@@ -122,6 +121,9 @@ export default function PaymetPage() {
                 };
 
                 updateCartWithImages();
+            }
+            else{
+                redirectToHome();
             }
         }
     }, [user]);
