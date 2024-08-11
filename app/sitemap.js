@@ -1,4 +1,16 @@
-export default function sitemap(){
+import { getProducts, getCatalogs } from "@/lib/firebase_server"
+import { get } from "firebase/database";
+export default function sitemap() {
+    getCatalogs().then((data) => {
+        const products = Promise.all(
+            Object.keys(data).forEach((key) => {
+                return getProducts(key);
+            })
+        )
+        products.then((data) => {
+        })      
+    });
+
     return [
         {
             url: process.env.NEXT_PUBLIC_BASE_URL,
@@ -60,6 +72,6 @@ export default function sitemap(){
             changeFrequency: 'weekly',
             priority: 1
         }
-    
+
     ]
 }
