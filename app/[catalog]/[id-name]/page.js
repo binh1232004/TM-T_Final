@@ -30,7 +30,7 @@ export async function generateMetadata({ params }) {
     if (product) {
         return {
             title: product.name,
-            description: product.description,
+            description: product.description?.slice(0, 160) || "",
             openGraph: {
                 type: "website",
                 title: product.name,
