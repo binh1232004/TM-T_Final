@@ -236,7 +236,7 @@ export default function Cart({ c = null, small = false }) {
                     className="!my-0"
                     orientationMargin="0"
                 >
-                    <Title level={3}>Your cart</Title>
+                    <Title level={3}>Your cart <span className="opacity-50 text-base">({cart.length})</span></Title>
                 </Divider>
             ) : null}
             <List
