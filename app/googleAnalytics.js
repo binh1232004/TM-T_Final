@@ -9,7 +9,7 @@ export function GoogleAnalytics() {
             }); var f = d.getElementsByTagName(s)[0],
                 j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
                     'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
-        })(window, document, 'script', 'dataLayer', 'GTM-58VS3BCK');
+        })(window, document, 'script', 'dataLayer', 'GTM-N246JHQ8');
     }, []);
 
     return <></>
@@ -18,7 +18,7 @@ export function GoogleAnalytics() {
 export function GoogleTagManager() {
     return (
         <noscript>
-            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-58VS3BCK" height="0" width="0" style={{ display: "none", visibility: "hidden" }}></iframe>
+            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-N246JHQ8" height="0" width="0" style={{ display: "none", visibility: "hidden" }}></iframe>
         </noscript>
     )
 }
