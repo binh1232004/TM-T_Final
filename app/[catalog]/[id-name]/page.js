@@ -16,7 +16,25 @@ export default async function Page({ params, query }) {
         notFound();
     }
 
-    return <Product params={params} query={query}/>;
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.description,
+        image: product.images,
+        offers: {
+            "@type": "Offer",
+            price: product.price,
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            url: `https://example.com/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
+        },
+    };
+
+    return <>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}/>
+        <Product params={params} query={query}/>
+    </>;
 }
 
 export async function generateMetadata({ params }) {
