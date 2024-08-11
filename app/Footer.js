@@ -17,7 +17,7 @@ const Footer = () => {
 
     useEffect(() => {
         // Tích hợp Tawk.to
-        var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
+        /*var Tawk_API = Tawk_API || {}, Tawk_LoadStart = new Date();
         (function () {
             var s1 = document.createElement("script"),
                 s0 = document.getElementsByTagName("script")[0];
@@ -26,7 +26,13 @@ const Footer = () => {
             s1.charset = "UTF-8";
             s1.setAttribute("crossorigin", "*");
             s0.parentNode.insertBefore(s1, s0);
-        })();
+        })();*/
+
+        var Subiz_API = Subiz_API || {}, Subiz_LoadStart = new Date();
+        (function (s, u, b, i, z) {
+            var o, t, r, y;
+            s[i] || (s._sbzaccid = z, s[i] = function () { s[i].q.push(arguments) }, s[i].q = [], s[i]("setAccount", z), r = ["widget.subiz.net", "storage.googleapis" + (t = ".com"), "app.sbz.workers.dev", i + "a" + (o = function (k, t) { var n = t <= 6 ? 5 : o(k, t - 1) + o(k, t - 3); return k !== t ? n : n.toString(32) })(20, 20) + t, i + "b" + o(30, 30) + t, i + "c" + o(40, 40) + t], (y = function (k) { var t, n; s._subiz_init_2094850928430 || r[k] && (t = u.createElement(b), n = u.getElementsByTagName(b)[0], t.async = 1, t.src = "https://" + r[k] + "/sbz/app.js?accid=" + z, n.parentNode.insertBefore(t, n), setTimeout(y, 2e3, k + 1)) })(0));
+        })(window, document, "script", "subiz", "acsbnwexdhugiaghnfmn");
 
         setVisible(true);
         const timer = setTimeout(() => setVisible(false), 6000);
