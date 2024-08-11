@@ -4,6 +4,8 @@ import Product from "@/app/[catalog]/[id-name]/client";
 import { getProduct } from "@/lib/firebase_server";
 import { notFound } from "next/navigation";
 
+const public_url = process.env.VERCEL_URL || "";
+
 // TODO: cache product
 
 export default async function Page({ params, query }) {
@@ -27,7 +29,7 @@ export default async function Page({ params, query }) {
             price: product.price,
             priceCurrency: "USD",
             availability: "https://schema.org/InStock",
-            url: `https://example.com/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
+            url: `${public_url}/${catalog}/${id}-${product.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`,
         },
     };
 
@@ -40,8 +42,6 @@ export default async function Page({ params, query }) {
 export async function generateMetadata({ params }) {
     const [id] = params["id-name"].split("-", 2);
     const catalog = params["catalog"];
-
-    const public_url = process.env.VERCEL_URL || "";
 
     const product = await getProduct(id, catalog);
 
