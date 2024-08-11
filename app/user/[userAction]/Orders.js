@@ -13,7 +13,10 @@ const orderListItem = (order) => {
         <div className="flex flex-col justify-between w-full">
             <div>
                 <div className="flex flex-row justify-between">
-                    <Title level={5}>{order.date}</Title>
+                    <div>
+                        <Title level={5}>{order.date}</Title>
+                        <p className="opacity-60">{order?.transactionID || order.id}</p>
+                    </div>
                     <p>{order.status ? "Complete" : "Ongoing"}</p>
                 </div>
                 <hr className="my-2"/>
