@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { getCatalogs, getProduct } from "@/lib/firebase_server";
 import { Button, Carousel, Descriptions, Image, InputNumber, Radio, Tooltip, Typography } from "antd";
-import { getPendingOrder, setCart, useCart, useUser } from "@/lib/firebase";
+import { getPendingOrder, setCart, setPendingOrder, useCart, useUser } from "@/lib/firebase";
 import { numberWithSeps, useMessage } from "@/lib/utils";
 import {
     CreditCardOutlined,
@@ -86,8 +86,21 @@ export default function Product({ params }) {
                             <Button disabled={product.variants[option] === 0 || !(product.variants[option] >= amount)}
                                     size="large" type="primary"
                                     onClick={() => {
-                                        if (getPendingOrder(user)) {
+                                        if (getPendingOrder(user).length) {
                                             error("You have a pending order. Please complete the payment first.");
+                                        } else {
+                                            setPendingOrder(user, [{
+                                                id: product.id,
+                                                catalog: product.catalog,
+                                                variant: option,
+                                                amount: amount,
+                                            }]).then(result => {
+                                                if (result.status === "success") {
+                                                    window.location.href = "/user/payment";
+                                                } else {
+                                                    error("An error occurred " + result.message);
+                                                }
+                                            });
                                         }
                                     }}
                             >
@@ -159,9 +172,8 @@ export default function Product({ params }) {
 
                         </div>
                     </div>
-
-                    <Descriptions title="Product details" column={1} className="!my-3">
-                        <Text>{product.description}</Text>
+                    <Descriptions title="Product details" column={1} className="!my-2">
+                        <Text className="whitespace-break-spaces">{product.description}</Text>
                     </Descriptions>
                 </div>
             </div>
