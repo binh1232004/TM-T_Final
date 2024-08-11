@@ -17,7 +17,7 @@ const orderListItem = (order) => {
                         <Title level={5}>{order.date}</Title>
                         <p className="opacity-60">{order?.transactionID || order.id}</p>
                     </div>
-                    <p>{order.status ? "Complete" : "Ongoing"}</p>
+                    <p className="flex flex-col justify-center">{order.status ? "Complete" : "Ongoing"}</p>
                 </div>
                 <hr className="my-2"/>
             </div>
@@ -30,7 +30,7 @@ const orderListItem = (order) => {
             </div>
             <div className="flex flex-row justify-end w-full">
                 <div>
-                    <p>{order.deliveryOption}</p>
+                    <p>{order.deliveryOption || order.delivery_option}</p>
                     <p>Total: ${numberWithSeps(order.total)}</p>
                 </div>
             </div>
@@ -63,7 +63,7 @@ export default function Orders({ uid = null }) {
             <Title level={3}>{uid ? "" : "Your orders"}</Title>
         </Divider>
         <List
-            dataSource={Object.values(orders)}
+            dataSource={Object.values(orders).sort((a, b) => a.id.localeCompare(b.id)).reverse()}
             renderItem={orderListItem}
         />
     </Spin>;
