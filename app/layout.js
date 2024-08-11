@@ -2,7 +2,8 @@ import { Inter } from "next/font/google";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "./globals.css";
 import MainLayout from "@/app/MainLayout";
-import { GoogleAnalytics, GoogleTagManager } from "./googleAnalytics";
+// import { GoogleAnalytics, GoogleTagManager } from "./googleAnalytics";
+import { GoogleAnalytics } from '@next/third-parties/google'
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -28,13 +29,13 @@ export default function RootLayout({ children }) {
                 <GoogleAnalytics />
             </head>
             <body className={`${inter.className}`}>
-                <GoogleTagManager />
                 <AntdRegistry>
                     <MainLayout>
                         {children}
                     </MainLayout>
                 </AntdRegistry>
             </body>
+            <GoogleAnalytics gaId="G-LJEPYD7XFF"/>
         </html>
     );
 }
