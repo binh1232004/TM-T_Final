@@ -1,7 +1,7 @@
 import { getProducts, getCatalogs } from "@/lib/firebase_server"
-import { get } from "firebase/database";
-import { connectStorageEmulator } from "firebase/storage";
+import { unstable_noStore as noStore } from "next/cache";
 export default async function sitemap() {
+    noStore();
     let products = [];
     let catalogs = await getCatalogs();
     console.log('catalogs',catalogs)
