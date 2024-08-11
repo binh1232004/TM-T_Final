@@ -25,9 +25,6 @@ export const metadata = {
 export default function RootLayout({ children }) {
     return (
         <html lang="en">
-            <head>
-                <GoogleAnalytics />
-            </head>
             <body className={`${inter.className}`}>
                 <AntdRegistry>
                     <MainLayout>
