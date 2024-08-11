@@ -2,7 +2,7 @@
 
 
 import { useEffect, useState } from "react";
-import { getProduct } from "@/lib/firebase_server";
+import { getCatalogs, getProduct } from "@/lib/firebase_server";
 import { Button, Carousel, Descriptions, Image, InputNumber, Radio, Tooltip, Typography } from "antd";
 import { getPendingOrder, setCart, useCart, useUser } from "@/lib/firebase";
 import { numberWithSeps, useMessage } from "@/lib/utils";
@@ -37,9 +37,12 @@ export default function Product({ params }) {
     const [amount, setAmount] = useState(1);
 
     useEffect(() => {
-        getProduct(id, catalog).then(result => {
-            setProduct(result);
-            window.history.replaceState(window.history.state, "", `/${catalog}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
+        getCatalogs().then(c => {
+            if (c?.[catalog]) c = c[catalog];
+            getProduct(id, c.name || catalog).then(result => {
+                setProduct(result);
+                window.history.replaceState(window.history.state, "", `/${(c.name || catalog).toLowerCase()}/${id}-${result.name.replaceAll(" ", "-").replaceAll(/[^a-zA-Z0-9-_]/g, "")}`);
+            });
         });
     }, [catalog, id]);
 
