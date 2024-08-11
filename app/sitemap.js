@@ -1,17 +1,38 @@
 import { getProducts, getCatalogs } from "@/lib/firebase_server"
 import { get } from "firebase/database";
-export default function sitemap() {
-    getCatalogs().then((data) => {
-        const products = Promise.all(
-            Object.keys(data).forEach((key) => {
-                return getProducts(key);
-            })
-        )
-        products.then((data) => {
-        })      
+import { connectStorageEmulator } from "firebase/storage";
+export default async function sitemap() {
+    let products = [];
+    let catalogs = await getCatalogs();
+    console.log('catalogs',catalogs)
+    products = Object.keys(catalogs).map(async (key) => {
+        return Object.values(await getProducts(key))
+    });  
+    const data = await Promise.all(products);
+    // console.log('data',data)    
+    const arrShirts = data[0];
+    const arrPants = data[1];
+    const arrAccessories = data[2];
+    arrShirts.map((shirt) => {
+        shirt.catalog = catalogs[shirt.catalog].name;
     });
-
+    arrPants.map((pant) => {
+        pant.catalog = catalogs[pant.catalog].name;
+    });
+    arrAccessories.map((accessory) => {
+        accessory.catalog = catalogs[accessory.catalog].name;
+    });
+    const arrDetailProduct = [...arrShirts, ...arrPants, ...arrAccessories];
+    const siteMapDetailProduct = arrDetailProduct.map((product) => {
+        return {
+            url: `${process.env.NEXT_PUBLIC_BASE_URL}/${product.catalog}/${product.id}`,
+            lastModified: new Date(),
+            changeFrequency: 'weekly',
+            priority: 0.9
+        }
+    });
     return [
+        ...siteMapDetailProduct,
         {
             url: process.env.NEXT_PUBLIC_BASE_URL,
             lastModified: new Date(),
