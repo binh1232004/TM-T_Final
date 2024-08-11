@@ -12,7 +12,7 @@ export function GoogleAnalytics() {
         })(window, document, 'script', 'dataLayer', 'GTM-58VS3BCK');
     }, []);
 
-    return <div></div>
+    return <></>
 
 }
 export function GoogleTagManager() {
