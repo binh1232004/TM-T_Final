@@ -13,7 +13,7 @@ import { downloadObjectAsJson } from "@/lib/utils";
 
 const { Text } = Typography;
 
-export default function UserListItem({ user, onEdit = null, onDelete = null, onOrder = null }) {
+export default function UserListItem({ user, onEdit = null, onDelete = null, onOrder = null, onDeleteData = null }) {
 
     const deleted = user.deleted || user?.will_delete;
 
@@ -28,9 +28,15 @@ export default function UserListItem({ user, onEdit = null, onDelete = null, onO
                 </div>
             </div>
             <div className="flex flex-row gap-2 h-fit my-auto">
-                {deleted ? <Button size="small" type="primary" danger onClick={() => {
-                    // TODO: find a way to delete user data
-                }}>Delete data</Button> : null}
+                {deleted ? <Popconfirm
+                    title="Do you want to delete this user data?"
+                    description="This action cannot be undone"
+                    okType={"danger"}
+                    onConfirm={() => onDeleteData?.(user)}
+                    icon={<WarningTwoTone twoToneColor="red"/>}
+                >
+                    <Button size="small" type="primary" danger>Delete data</Button>
+                </Popconfirm> : null}
                 {!deleted ? <>
                     <Tooltip title="Download user data">
                         <Button size="small" disabled={deleted} type="default" onClick={() => {

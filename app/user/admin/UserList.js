@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { deleteUser, getUsers } from "@/lib/firebase";
+import { deleteUser, deleteUserData, getUsers } from "@/lib/firebase";
 import { Button, List, Popover, Spin, Typography } from "antd";
 import UserListItem from "@/app/user/admin/UserListItem";
 import UserForm from "@/app/user/admin/UserForm";
@@ -50,6 +50,21 @@ export default function UserList() {
         setCurrentUser(user);
     };
 
+    const onDeleteData = (user) => {
+        if (!user.uid) {
+            error("User ID not found");
+            return;
+        }
+        deleteUserData(user.uid).then((result) => {
+            if (result.status === "success") {
+                setReload(!reload);
+                success("User data deleted");
+            } else {
+                error(result.message);
+            }
+        });
+    };
+
     return <div>
         <Spin spinning={loading} size="large">
             {contextHolder}
@@ -66,7 +81,7 @@ export default function UserList() {
                 pagination={{ position: "bottom", align: "center" }}
                 renderItem={(item) => {
                     return <UserListItem user={item} onDelete={onDelete} onEdit={onEdit}
-                                         onOrder={onOrder}></UserListItem>;
+                                         onOrder={onOrder} onDeleteData={onDeleteData}/>;
                 }}
             />
             <div className="w-full flex flex-row justify-end">
