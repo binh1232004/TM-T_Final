@@ -8,7 +8,6 @@ import {
     CreditCardOutlined,
     HomeOutlined,
     KeyOutlined,
-    MailOutlined,
     PoweroffOutlined,
     SettingOutlined,
     ShoppingCartOutlined,
@@ -16,12 +15,13 @@ import {
 } from "@ant-design/icons";
 import { Badge, Button, Input, List, Menu, Popover, Spin } from "antd";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Cart from "./user/[userAction]/Cart";
 
 const Nav = () => {
     const pathName = usePathname();
+    const router = useRouter();
     const user = useUser();
     const [loginForm, setLoginForm] = useState(false);
     const [open, setOpen] = useState(false);
@@ -204,8 +204,14 @@ const Nav = () => {
                     </div>
                     <div className="flex justify-center items-center w-96">
                         <Search
-                            placeholder="input search text"
-                            enterButton="Search"
+                            placeholder="Search"
+                            enterButton
+                            defaultValue={new URL(window.location.href).searchParams.get("q") || ""}
+                            onSearch={(value) => {
+                                if (!value) return;
+                                router.push(`/search?q=${value}`);
+                                window.location.reload();
+                            }}
                             // style={{width:"500px md:300px"}}
                             // size="large"
                             // onSearch={onSearch}
