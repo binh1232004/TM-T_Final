@@ -1,5 +1,6 @@
 import { getProducts, getCatalogs } from "@/lib/firebase_server"
 import { unstable_noStore as noStore } from "next/cache";
+export const fetchCache = 'force-no-store';
 export default async function sitemap() {
     noStore();
     let products = [];
