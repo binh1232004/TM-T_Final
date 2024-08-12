@@ -11,9 +11,10 @@ import {
     PoweroffOutlined,
     SettingOutlined,
     ShoppingCartOutlined,
-    UserOutlined
+    UserOutlined,
+    NotificationOutlined,
 } from "@ant-design/icons";
-import { Badge, Button, Input, List, Menu, Popover, Spin } from "antd";
+import { Badge, Button, Input, List, Menu, Popover, Spin, Tooltip } from "antd";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -35,7 +36,7 @@ const Nav = () => {
             label: (
                 <Link href="/">
                     <span>
-                        <HomeOutlined/> Home
+                        <HomeOutlined /> Home
                     </span>
                 </Link>
             ),
@@ -43,7 +44,8 @@ const Nav = () => {
     ]);
     const [userMenu, setUserMenu] = useState([
         {
-            key: "1", icon: <SettingOutlined/>,
+            key: "1",
+            icon: <SettingOutlined />,
             label: (
                 <Link href={"/user"}>
                     <span>Manage account</span>
@@ -51,7 +53,8 @@ const Nav = () => {
             ),
         },
         {
-            key: "2", icon: <CreditCardOutlined/>,
+            key: "2",
+            icon: <CreditCardOutlined />,
             label: (
                 <Link href={"/user/orders"}>
                     <span>Oders</span>
@@ -59,7 +62,8 @@ const Nav = () => {
             ),
         },
         {
-            key: "3", icon: <PoweroffOutlined/>,
+            key: "3",
+            icon: <PoweroffOutlined />,
             label: (
                 <Link href="">
                     <span>Sign out</span>
@@ -73,7 +77,8 @@ const Nav = () => {
             setNotification((prev) => {
                 return {
                     ...prev,
-                    pendingOder: (<Link href={"/user/payment"} className="text-red-500">
+                    pendingOder: (
+                        <Link href={"/user/payment"} className="text-red-500">
                             You have a pending oder!
                         </Link>
                     ),
@@ -98,7 +103,7 @@ const Nav = () => {
                     label: (
                         <Link href="/">
                             <span>
-                                <HomeOutlined/> Home
+                                <HomeOutlined /> Home
                             </span>
                         </Link>
                     ),
@@ -123,7 +128,8 @@ const Nav = () => {
             if (userMenu[0].key !== "/admin") {
                 setUserMenu([
                     {
-                        key: "/admin", icon: <KeyOutlined/>,
+                        key: "/admin",
+                        icon: <KeyOutlined />,
                         label: (
                             <Link href={"/user/admin"}>
                                 <span>Admin</span>
@@ -132,6 +138,10 @@ const Nav = () => {
                     },
                     ...userMenu,
                 ]);
+            }
+        } else {
+            if (userMenu[0].key === "/admin") {
+                setUserMenu(userMenu.slice(1));
             }
         }
     }, [user, userMenu]);
@@ -181,10 +191,12 @@ const Nav = () => {
                                         setOpen(false);
                                     }
                                 }}
+                                disabled={user === undefined}
                             >
                                 {user !== undefined ? (
                                     user?.email || "Sign in"
-                                ) : (<Spin size="small"/>
+                                ) : (
+                                    <Spin size="small" />
                                 )}
                             </Button>
                         </Popover>
@@ -206,7 +218,11 @@ const Nav = () => {
                         <Search
                             placeholder="Search"
                             enterButton
-                            defaultValue={new URL(window.location.href).searchParams.get("q") || ""}
+                            defaultValue={
+                                new URL(window.location.href).searchParams.get(
+                                    "q"
+                                ) || ""
+                            }
                             onSearch={(value) => {
                                 if (!value) return;
                                 router.push(`/search?q=${value}`);
@@ -218,6 +234,19 @@ const Nav = () => {
                         />
                     </div>
                     <div className="flex justify-center items-center mx-3 my-5 gap-4">
+                        <div className="translate-y-1">
+                            <Link
+                                href={"/news"}
+                                className="!border-none !bg-transparent !text-white group"
+                            >
+                                <Tooltip title="News" color="white" overlayClassName="[&_*]:!text-black">
+                                    <NotificationOutlined
+                                        className="!text-white group-hover:!text-blue-500 !outline-none"
+                                        style={{ fontSize: "25px" }}
+                                    />
+                                </Tooltip>
+                            </Link>
+                        </div>
                         <div className="translate-y-1">
                             <Popover
                                 fresh
@@ -273,15 +302,26 @@ const Nav = () => {
                                         </div>
                                     )
                                 }
-                                content={user ? (<List
-                                        bordered
-                                        dataSource={Object.keys(notification)}
-                                        renderItem={() => (<List.Item>
-                                                {Object.keys(notification).map((key) => {
-                                                    return notification[key];
-                                                })}
-                                            </List.Item>)}
-                                    ></List>) : null
+                                content={
+                                    user ? (
+                                        <List
+                                            bordered
+                                            dataSource={Object.keys(
+                                                notification
+                                            )}
+                                            renderItem={() => (
+                                                <List.Item>
+                                                    {Object.keys(
+                                                        notification
+                                                    ).map((key) => {
+                                                        return notification[
+                                                            key
+                                                        ];
+                                                    })}
+                                                </List.Item>
+                                            )}
+                                        ></List>
+                                    ) : null
                                 }
                             >
                                 <Link
@@ -300,7 +340,6 @@ const Nav = () => {
                                 </Link>
                             </Popover>
                         </div>
-                        
                     </div>
                 </div>
             </nav>

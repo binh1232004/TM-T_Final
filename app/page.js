@@ -1,12 +1,11 @@
 "use client";
 
 import ItemList from "@/app/ItemList";
-import { getCatalogs } from "@/lib/firebase_server";
-import { useEffect, useState } from "react";
-import { Carousel, Image } from "antd";
 import { getBanners } from "@/lib/firebase";
+import { getCatalogs } from "@/lib/firebase_server";
+import { Carousel, Image } from "antd";
 import Link from "next/link";
-import RSSWidget from "./RSSWidget";
+import { useEffect, useState } from "react";
 
 export default function Home() {
     const [catalogs, setCatalogs] = useState({});
@@ -40,7 +39,6 @@ export default function Home() {
                               title={catalogs[key].name}></ItemList>;
                 </div>;
             })}
-             <RSSWidget />
         </div>
     );
 }
