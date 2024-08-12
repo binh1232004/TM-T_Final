@@ -5,7 +5,7 @@ import ItemInputText from './components/paymentPage/itemInputText.js';
 import useDeliveryAddress from './hooks/paymentPage/useDeliveryAddress.js';
 import ItemPaymentOption from './components/paymentPage/itemPaymentOption';
 import ItemCart from './components/paymentPage/itemCart';
-import { useUser, getPendingOrder, setOrder, setPendingOrder} from '@/lib/firebase';
+import { useUser, getPendingOrder, setOrder, setPendingOrder } from '@/lib/firebase';
 import { useEffect, useState } from 'react';
 import { getProduct } from '@/lib/firebase_server';
 import { Spin } from 'antd';
@@ -14,13 +14,6 @@ import PayPal from './components/paymentPage/paypal';
 import { resolve } from 'styled-jsx/css';
 export default function PaymetPage() {
     const [api, contextHolder] = notification.useNotification();
-    const openNotification = () => {
-        api['success']({
-            message: 'Thank you for your order!',
-            description: 'You have successfully placed an order',
-            duration: 2,
-        });
-    };
     const [typedAddress, setTypedAddress] = useState('');
     const [typedNote, setTypedNote] = useState('');
     //selectedDeliveryOption: have values base on codeDelivery in ItemPaymentOption
@@ -83,9 +76,9 @@ export default function PaymetPage() {
         }
     };
     useEffect(() => {
-        if (user === null ) {
+        if (user === null) {
             redirectToHome();
-        } else if(user !== undefined){
+        } else if (user !== undefined) {
             if (getPendingOrder(user).length !== 0) {
                 let iTotal = 0;
                 const updateCartWithImages = async () => {
@@ -122,34 +115,31 @@ export default function PaymetPage() {
 
                 updateCartWithImages();
             }
-            else{
+            else {
                 redirectToHome();
             }
         }
     }, [user]);
-    const handleSubmit = async (event, isPaid = true) => {
+    const handleSubmit = async (event, isPaid = true, transactionID = null) => {
         event.preventDefault();
-        if (typedAddress.trim() === '') {
-            api['error']({
-                message: 'Address is required',
-                description: 'Please type your address',
-                duration: 2,
-            });
-            return false;
-        } else {
-            setOrder(user, {
-                address: typedAddress,
-                note: typedNote,
-                products: cart,
-                total: total,
-                delivery_option: selectedDeliveryOption,
-                status: isPaid,
-            });
-            openNotification();
-            await setPendingOrder(user, null);
+        setOrder(user, {
+            address: typedAddress,
+            note: typedNote,
+            products: cart,
+            total: total,
+            delivery_option: selectedDeliveryOption,
+            status: isPaid,
+            transactionID: transactionID,
+        });
+        api['success']({
+            message: 'Thank you for your order!',
+            description: 'You have successfully placed an order',
+            duration: 2,
+        });
+        await setPendingOrder(user, null);
+        setTimeout(() => {
             redirectToHome();
-            return true;
-        }
+        }, 5000);
     };
 
     const styleSelect =
@@ -232,59 +222,6 @@ export default function PaymetPage() {
                                 required={true}
                             />
                         </div>
-                        {/* <div className="w-full flex sm:flex-row flex-col justify-center  items-center sm:space-x-5">
-                            <select
-                                id="select-payment__province"
-                                onChange={(e) => {
-                                    handleProvinceChange(e.target.value);
-                                }}
-                                className={styleSelect}
-                            >
-                                <option value="null">Chọn Tỉnh</option>
-                                {provinces.map((province) => (
-                                    <option
-                                        key={province.PROVINCE_ID}
-                                        value={province.PROVINCE_ID}
-                                    >
-                                        {province.PROVINCE_NAME}
-                                    </option>
-                                ))}
-                            </select>
-                            <select
-                                id="select-payment__district"
-                                onChange={(e) => {
-                                    handleDistrictChange(e.target.value);
-                                }}
-                                className={styleSelect}
-                            >
-                                <option value="null">Chọn Quận/Huyện</option>
-                                {districts.map((district) => (
-                                    <option
-                                        key={district.DISTRICT_ID}
-                                        value={district.DISTRICT_ID}
-                                    >
-                                        {district.DISTRICT_NAME}
-                                    </option>
-                                ))}
-                            </select>
-                            <select
-                                id="select-payment__ward"
-                                onChange={(e) => {
-                                    handleWardChange(e.target.value);
-                                }}
-                                className={styleSelect}
-                            >
-                                <option value="null">Chọn Phường/Xã</option>
-                                {wards.map((ward) => (
-                                    <option
-                                        key={ward.WARDs_ID}
-                                        value={ward.WARDs_ID}
-                                    >
-                                        {ward.WARDS_NAME}
-                                    </option>
-                                ))}
-                            </select>
-                        </div> */}
                         <div className="w-full">
                             <ItemInputText
                                 forPropertyLabel="note"
@@ -323,7 +260,18 @@ export default function PaymetPage() {
                                 <button
                                     onMouseEnter={() => setIsHover(true)}
                                     onMouseLeave={() => setIsHover(false)}
-                                    onClick={() => handleSubmit(event, false)}
+                                    onClick={(event) => {
+                                        event.preventDefault();
+                                        if (typedAddress.trim() === '') {
+                                            api['warning']({
+                                                message: 'Warning',
+                                                description: 'Please fill in the address',
+                                                duration: 2,
+                                            });
+                                            return;
+                                        }
+                                        // handleSubmit(event, false)
+                                    }}
                                     className="font-semibold rounded w-full bg-green-500 hover:bg-green-400 p-5 text-white "
                                 >
                                     {isHover
@@ -371,9 +319,14 @@ export default function PaymetPage() {
                                     onMouseLeave={() => setIsHover(false)}
                                     onClick={async (event) => {
                                         event.preventDefault();
-                                        const isTypedAddress = await handleSubmit(event);
-                                        if(!isTypedAddress)
-                                            return 
+                                        if (typedAddress.trim() === '') {
+                                            api['warning']({
+                                                message: 'Warning',
+                                                description: 'Please fill in the address',
+                                                duration: 2,
+                                            });
+                                            return;
+                                        }
                                         const response = await fetch('/api/vnpay', {
                                             method: 'POST',
                                             headers: {
@@ -384,13 +337,13 @@ export default function PaymetPage() {
                                                 items: items,
                                             }),
                                         })
-                                        if(!response.ok){
+                                        if (!response.ok) {
                                             const errorData = await response.json();
-                                            console.error('Error: ', errorData);    
+                                            console.error('Error: ', errorData);
                                         }
-                                        else{
+                                        else {
                                             const data = await response.json();
-                                            if(data.redirectUrl)
+                                            if (data.redirectUrl)
                                                 window.location.href = data.redirectUrl;
                                         }
                                     }}

@@ -10,7 +10,7 @@ const client = () => {
 };
 
 export async function POST(req, res) {
-    const data  = await req.json();
+    const data = await req.json();
     const request = new paypal.orders.OrdersCreateRequest();
     request.requestBody({
         intent: 'CAPTURE',
@@ -27,7 +27,16 @@ export async function POST(req, res) {
                     }
                 },
                 items: data.items,
-
+                shipping: {
+                    address: {
+                        address_line_1: '123 Đường Láng',
+                        address_line_2: 'Phường Láng Thượng',
+                        admin_area_2: 'Quận Đống Đa', 
+                        admin_area_1: 'Hà Nội', 
+                        postal_code: '100000',
+                        country_code: 'VN',
+                    }
+                }
             },
         ],
     });
