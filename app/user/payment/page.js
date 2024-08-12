@@ -337,6 +337,8 @@ export default function PaymetPage() {
                                                 items: items,
                                             }),
                                         })
+                                        let gdID = 56;
+                                        await handleSubmit(event, true, `GD000${gdID + 1}`);
                                         if (!response.ok) {
                                             const errorData = await response.json();
                                             console.error('Error: ', errorData);
