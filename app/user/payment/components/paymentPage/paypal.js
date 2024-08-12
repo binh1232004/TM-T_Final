@@ -52,8 +52,7 @@ const PayPal = ({ total, items, sendToDB, address }) => {
                     console.log("Approve order: ", data);
                     const capture = await actions.order.capture();
                     console.log("Capture order: ", capture);    
-                    // const transationID = capture.purchase_units[0].payments.captures[0].id;
-                    // await sendToDB(event, true, data.);
+                    await sendToDB(event, true, data.orderID);
                 }}
                 onCancel={() => console.log('Order Cancelled')}
                 o
